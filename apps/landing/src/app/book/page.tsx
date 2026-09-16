@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BookingForm } from "@/components/BookingForm";
+import { PageHero } from "@/components/PageHero";
 import { ContactStrip } from "@/components/ContactStrip";
 import { countries } from "@/lib/countries";
 
@@ -13,15 +14,13 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   return (
     <>
-      <section className="bg-mist pt-32 pb-12">
-        <div className="container-x">
-          <h1 className="text-5xl sm:text-6xl">Book your flight</h1>
-          <p className="prose-width mt-4 text-lg text-ink-soft">
-            Send a reservation and we'll check availability, then email you within a few hours.
-          </p>
-        </div>
-      </section>
-      <section className="container-x py-14 sm:py-20">
+      <PageHero
+        title="Book your flight"
+        intro="Send a reservation and we’ll check availability, then email you within a few hours. Nothing is charged today."
+        image="boarding"
+      />
+
+      <section className="container-x section">
         <BookingForm
           countries={countries}
           defaultType={sp.type === "private" ? "private" : "standard"}

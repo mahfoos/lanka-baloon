@@ -13,7 +13,7 @@ const extra = (id: string) => extras.find((e) => e.id === id)!.price;
 
 export type PriceLine = { label: string; amount: number };
 
-/** The total, itemised — so the booking form can show guests how it adds up. */
+/** The total, itemised, so the booking form can show guests how it adds up. */
 export function priceBreakdown(i: PriceInput): PriceLine[] {
   const lines: PriceLine[] = [];
 
@@ -30,7 +30,7 @@ export function priceBreakdown(i: PriceInput): PriceLine[] {
   return lines;
 }
 
-/** Single source of truth for totals — used by the form preview AND the server action. */
+/** Single source of truth for totals, used by the form preview AND the server action. */
 export function calculateTotal(i: PriceInput): number {
   return priceBreakdown(i).reduce((sum, line) => sum + line.amount, 0);
 }

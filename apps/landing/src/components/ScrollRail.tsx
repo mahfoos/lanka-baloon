@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
  * Horizontal snap rail with arrow controls.
  *
  * Children are rendered untouched, so the caller can stay a server component and
- * keep the photos out of the client bundle. The rail scrolls natively — the arrows
+ * keep the photos out of the client bundle. The rail scrolls natively; the arrows
  * are an addition for mouse users, not the only way to move.
  */
 export function ScrollRail({ children, label }: { children: ReactNode; label: string }) {
@@ -34,7 +34,7 @@ export function ScrollRail({ children, label }: { children: ReactNode; label: st
     ref.current?.scrollBy({ left: direction * ref.current.clientWidth * 0.8, behavior: "smooth" });
 
   return (
-    <div className="relative">
+    <div className="relative [overflow-x:clip]">
       {/* The track bleeds to the right edge of the window so the row reads as
           continuing off-screen, while the controls below stay on the container grid. */}
       <div

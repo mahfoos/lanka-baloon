@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { nav } from "@/lib/content";
 import { Pic } from "./Pic";
 
@@ -11,6 +11,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const overHero = pathname === "/" && !scrolled && !open;
+  const panelRef = useRef<HTMLElement>(null);
 
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
@@ -20,6 +21,29 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // While the panel covers the screen: Escape closes it, the page behind stops
+  // scrolling, and focus moves into the menu so a keyboard or screen-reader user
+  // isn’t left on a toggle with the list read out somewhere behind them.
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    panelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const logoSize = scrolled ? "h-10" : "h-12";
 
   return (
     <header
@@ -28,13 +52,21 @@ export function Header() {
       }`}
     >
       <div className={`container-x flex items-center justify-between gap-6 py-3 transition-[height] duration-300 ${scrolled ? "h-16" : "h-18"}`}>
-        <Link href="/" className="flex shrink-0 items-center" aria-label="Sri Lanka Balloon home">
-          {/* logoSmall is the largest version of the dark mark we have (150px wide). */}
+        {/* Both marks render and cross-fade. Swapping the `src` instead would leave
+            the incoming file unloaded, so the logo blinks out on the first scroll. */}
+        <Link href="/" className="relative flex shrink-0 items-center" aria-label="Sri Lanka Balloon home">
           <Pic
-            name={overHero ? "logoWhite" : "logoSmall"}
+            name="logoSmall"
             alt="Sri Lanka Balloon"
             priority
-            className={`w-auto transition-[height] duration-300 ${scrolled ? "h-10" : "h-12"}`}
+            className={`w-auto transition-[height,opacity] duration-300 ${logoSize} ${overHero ? "opacity-0" : "opacity-100"}`}
+          />
+          <Pic
+            name="logoWhite"
+            alt=""
+            aria-hidden
+            priority
+            className={`absolute left-0 top-1/2 w-auto -translate-y-1/2 transition-[height,opacity] duration-300 ${logoSize} ${overHero ? "opacity-100" : "opacity-0"}`}
           />
         </Link>
 
@@ -49,12 +81,12 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <Link href="/book" className="btn-primary py-2.5">Book a flight</Link>
+          <Link href="/book" className="btn-primary">Book a flight</Link>
         </nav>
 
         <button
           type="button"
-          className="rounded-full p-2 lg:hidden"
+          className="grid size-11 place-items-center rounded-full lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((o) => !o)}
@@ -67,7 +99,14 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="border-t border-line bg-white lg:hidden">
+        <nav
+          ref={panelRef}
+          id="mobile-nav"
+          aria-label="Mobile"
+          // Capped and scrollable: six items plus the button can outrun a short
+          // phone in landscape, and the body behind is locked.
+          className="max-h-[calc(100svh-4.5rem)] overflow-y-auto border-t border-line bg-white lg:hidden"
+        >
           <ul className="container-x flex flex-col py-4">
             {nav.map((item, i) => (
               <li key={item.href} className="rise" style={{ animationDelay: `${i * 45}ms`, animationDuration: ".5s" }}>

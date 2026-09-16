@@ -9,9 +9,9 @@ export function ContactStrip() {
   ];
   return (
     <section className="bg-dawn-soft">
-      <div className="container-x py-16 sm:py-20">
+      <div className="container-x section">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <h2 className="max-w-xl text-3xl sm:text-4xl">Questions before you book? We're a message away.</h2>
+          <h2 className="max-w-xl text-3xl sm:text-4xl">Questions before you book? We’re a message away.</h2>
           <Link href="/book" className="btn-primary self-start md:self-auto">Book a flight</Link>
         </div>
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
@@ -19,7 +19,7 @@ export function ContactStrip() {
             <div key={w.title} className="border-t-2 border-ink pt-4">
               <h3 className="font-sans text-lg font-semibold">{w.title}</h3>
               <p className="mt-1 text-ink-soft">{w.body}</p>
-              <a href={w.href} className="mt-3 inline-block font-semibold text-flame underline underline-offset-4">{w.link}</a>
+              <a href={w.href} className="link-tap mt-3 font-semibold text-flame-dark underline underline-offset-4">{w.link}</a>
             </div>
           ))}
         </div>

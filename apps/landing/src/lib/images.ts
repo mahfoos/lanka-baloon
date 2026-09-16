@@ -10,7 +10,7 @@ export function image(key: ImageKey): ImageData {
   return data[key] as ImageData;
 }
 
-/** Just the path — for metadata (Open Graph, icons), which resolves it against metadataBase. */
+/** Just the path, for metadata (Open Graph, icons), which resolves it against metadataBase. */
 export function img(key: ImageKey): string {
   return image(key).src;
 }

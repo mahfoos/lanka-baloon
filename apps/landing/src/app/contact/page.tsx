@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 };
 
 const info = [
-  { title: "Pick-up time", body: "We'll tell you your pick-up time the day before your flight. Feel free to contact us to re-confirm." },
-  { title: "Hotels", body: `We pick up from any hotel in ${pickupAreas.join(", ")}. Haven't booked yet? We can help. Staying further away? Ask us about transfers.` },
-  { title: "Weather", body: "We'll let you know about flying conditions. If your day isn't flyable, we'll find you another date." },
+  { title: "Pick-up time", body: "We’ll tell you your pick-up time the day before your flight. Feel free to contact us to re-confirm." },
+  { title: "Hotels", body: `We pick up from any hotel in ${pickupAreas.join(", ")}. Haven’t booked yet? We can help. Staying further away? Ask us about transfers.` },
+  { title: "Weather", body: "We’ll let you know about flying conditions. If your day isn’t flyable, we’ll find you another date." },
 ];
 
 export default function ContactPage() {
@@ -22,20 +22,20 @@ export default function ContactPage() {
     <>
       <PageHero title="Contact us" intro="Our base is on Kandalama Road, just outside Dambulla." image="contactMap" />
 
-      <section className="container-x grid gap-14 py-20 sm:py-28 lg:grid-cols-2">
+      <section className="container-x section grid gap-14 lg:grid-cols-2">
         <Reveal>
           <address className="not-italic">
             <h2 className="text-3xl">{company.legal}</h2>
             <p className="mt-3 text-lg text-ink-soft">{company.address.join(", ")}</p>
             <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-lg">
               <dt className="text-ink-soft">Hotline</dt>
-              <dd><a href={company.phoneHref} className="underline">{company.phone}</a></dd>
+              <dd><a href={company.phoneHref} className="link-tap underline">{company.phone}</a></dd>
               <dt className="text-ink-soft">WhatsApp</dt>
-              <dd><a href={company.whatsapp} className="underline">{company.phone}</a></dd>
+              <dd><a href={company.whatsapp} className="link-tap underline">{company.phone}</a></dd>
               <dt className="text-ink-soft">Fax</dt>
               <dd>{company.fax}</dd>
               <dt className="text-ink-soft">Email</dt>
-              <dd><a href={`mailto:${company.email}`} className="underline">{company.email}</a></dd>
+              <dd><a href={`mailto:${company.email}`} className="link-tap break-all underline">{company.email}</a></dd>
             </dl>
           </address>
           <div className="mt-10 space-y-6">
@@ -47,24 +47,24 @@ export default function ContactPage() {
             ))}
           </div>
         </Reveal>
-        <Reveal delay={120} className="rounded-3xl bg-mist p-7 sm:p-10">
+        <Reveal delay={120} className="rounded-card bg-mist p-7 sm:p-10">
           <h2 className="text-3xl">Send us a message</h2>
           <div className="mt-6"><ContactForm /></div>
         </Reveal>
       </section>
 
       <section className="container-x pb-20">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-line sm:aspect-[21/9]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-card border border-line sm:aspect-[21/9]">
           <iframe title="Map to Lanka Ballooning" src={company.mapEmbed} className="absolute inset-0 h-full w-full" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
         </div>
       </section>
 
       <section className="bg-mist">
-        <div className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-2 md:items-center">
+        <div className="container-x section grid gap-12 md:grid-cols-2 md:items-center">
           <Reveal>
-            <h2 className="text-4xl">Getting to Dambulla</h2>
+            <h2 className="text-4xl sm:text-5xl">Getting to Dambulla</h2>
             <p className="mt-4 text-lg text-ink-soft">
-              We only pick up in {pickupAreas.join(", ")}. Coming from elsewhere? Tell us your route and we'll check options with our drivers — or hire a car with a driver, the easiest way around Sri Lanka.
+              We only pick up in {pickupAreas.join(", ")}. Coming from elsewhere? Tell us your route and we’ll check options with our drivers. You can also hire a car with a driver, which is the easiest way around Sri Lanka.
             </p>
             <dl className="mt-8 space-y-5">
               {gettingHere.map((g) => (
@@ -75,7 +75,7 @@ export default function ContactPage() {
               ))}
             </dl>
           </Reveal>
-          <Reveal delay={120} className="group relative aspect-[4/3] overflow-hidden rounded-3xl">
+          <Reveal delay={120} className="group relative aspect-[4/3] overflow-hidden rounded-card">
             <Pic name="faqSigiriya" alt="Balloon near Sigiriya" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
           </Reveal>
         </div>

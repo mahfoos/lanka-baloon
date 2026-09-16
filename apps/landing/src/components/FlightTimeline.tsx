@@ -27,7 +27,7 @@ export function FlightTimeline({ withImages = false }: { withImages?: boolean })
             <p className="mt-2 max-w-md text-ink-soft">{step.body}</p>
           </div>
           {withImages && i !== flightDay.length - 1 && (
-            <div className="group relative aspect-[16/10] overflow-hidden rounded-2xl">
+            <div className="group relative aspect-[16/10] overflow-hidden rounded-media">
               <Pic name={step.image} alt={step.title} fill sizes="(min-width: 768px) 45vw, 100vw" className="photo-zoom object-cover" />
             </div>
           )}

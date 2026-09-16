@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Palette: "dawn over Kandalama" — the colours of a balloon morning, from
+/* Palette: "dawn over Kandalama", the colours of a balloon morning, from
    pre-dawn indigo to sunrise amber, balloon-envelope red and lake teal. */
 @theme {
   --color-ink: #17203a;
@@ -15,13 +15,25 @@
 
   --font-display: var(--font-young-serif), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Two radii, not six. Cards carry the larger one; anything showing a photo or a
+     map gets the smaller, so the image reads as a window rather than a pill. */
+  --radius-card: 1.75rem;
+  --radius-media: 1rem;
 }
 
-html { scroll-behavior: smooth; }
+/* scroll-padding keeps in-page anchors clear of the fixed header, which is 72px
+   at rest. Without it `scroll-behavior: smooth` lands every jump under the bar. */
+html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 body { @apply bg-white text-ink font-sans antialiased; }
 
 h1, h2, h3 { @apply font-display text-balance; letter-spacing: -0.01em; }
 p { text-wrap: pretty; }
+
+/* Every <summary> on the site draws its own marker. Safari needs the webkit
+   pseudo-element as well as `list-style`, or it shows its triangle too. */
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
 
 :focus-visible { outline: 3px solid var(--color-dawn); outline-offset: 2px; border-radius: 4px; }
 
@@ -33,17 +45,32 @@ p { text-wrap: pretty; }
 
 @utility container-x { margin-inline: auto; width: 100%; max-width: 72rem; padding-inline: 1.25rem; @media (width >= 40rem) { padding-inline: 2rem; } }
 @utility prose-width { max-width: 64ch; }
-@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition duration-200 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0; }
+
+/* One vertical scale for the whole site. Every top-level band uses `section`, so
+   the gap between two subjects is always the same. Where two bands share a
+   background they're merged into one `section` instead, separated by `mt-20`. */
+@utility section { @apply py-20 sm:py-28; }
+
+/* `min-h-11` is the 44px minimum touch target. Without it `py-3` on a 15px font
+   renders a 42px button, which is under every platform guideline. */
+@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition duration-200 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0; }
 @utility btn-primary { @apply btn bg-flame text-white shadow-sm hover:-translate-y-0.5 hover:bg-flame-dark hover:shadow-lg hover:shadow-flame/25; }
 @utility btn-ghost { @apply btn border border-current hover:-translate-y-0.5 hover:bg-white/10; }
-@utility field { @apply w-full rounded-lg border border-line bg-white px-4 py-3 text-[15px] outline-none transition focus:border-ink aria-invalid:border-flame; }
+
+/* 16px is not a style choice: below it, Safari on iOS zooms the page in when a
+   field takes focus and never zooms back out, leaving the form scrolled sideways. */
+@utility field { @apply w-full rounded-lg border border-line bg-white px-4 py-3 text-base outline-none transition focus:border-ink aria-invalid:border-flame; }
 @utility label { @apply mb-1.5 block text-sm font-medium text-ink; }
 @utility error { @apply mt-1 text-sm text-flame; }
+
+/* Inline text links need a touch target too, but padding would break the line
+   box, so the margin pulls the layout back to where the text alone would sit. */
+@utility link-tap { @apply inline-block py-2 -my-2; }
 
 /* ---------------------------------------------------------------- *
  * Motion
  *
- * Everything drifts rather than snaps — the site should feel like the
+ * Everything drifts rather than snaps, so the site feels like the
  * flight it sells. `--ease-drift` is the shared curve: a quick start
  * that settles slowly, the way a balloon comes to rest.
  * ---------------------------------------------------------------- */
@@ -74,7 +101,7 @@ p { text-wrap: pretty; }
 .bob { animation: bob 2.4s ease-in-out infinite; }
 
 /* Scroll reveals, driven by <Reveal>. Hidden only under `.js`, which the inline
-   script in the layout sets before first paint — so no-JS visitors see everything
+   script in the layout sets before first paint, so no-JS visitors see everything
    and nobody sees a flash of hidden content. */
 .js [data-reveal] {
   opacity: 0;

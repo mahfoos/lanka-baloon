@@ -4,7 +4,7 @@ import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode
 
 type Props = {
   children: ReactNode;
-  /** Element to render. Use a semantic tag so reveals don't add stray divs. */
+  /** Element to render. Use a semantic tag so reveals don’t add stray divs. */
   as?: ElementType;
   /** Stagger, in ms, for items revealed together. */
   delay?: number;
@@ -15,7 +15,7 @@ type Props = {
  * Fades and lifts its children into view once, when they scroll near the viewport.
  *
  * The hidden state lives in CSS under `.js`, which an inline script in the layout
- * sets before first paint — so visitors without JavaScript see everything, and
+ * sets before first paint, so visitors without JavaScript see everything, and
  * there is no flash of hidden content for everyone else.
  */
 export function Reveal({ children, as: Tag = "div", delay = 0, className }: Props) {

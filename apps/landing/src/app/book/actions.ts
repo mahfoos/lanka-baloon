@@ -19,7 +19,7 @@ export async function createBooking(_prev: FormState, formData: FormData): Promi
   if (d.website) return { ok: true, reference: "SLB-000000" }; // honeypot hit
 
   if (!isSupabaseConfigured()) {
-    return { ok: false, message: "Online booking isn't connected yet. Please email fly@srilankaballoon.com or WhatsApp +94 77 472 7700." };
+    return { ok: false, message: "Online booking isn’t connected yet. Please email fly@srilankaballoon.com or WhatsApp +94 77 472 7700." };
   }
 
   // Price is always recalculated on the server.
@@ -46,7 +46,7 @@ export async function createBooking(_prev: FormState, formData: FormData): Promi
 
   if (error) {
     console.error("booking insert failed", error);
-    return { ok: false, message: "We couldn't send your reservation. Please try again, or WhatsApp us." };
+    return { ok: false, message: "We couldn’t send your reservation. Please try again, or WhatsApp us." };
   }
 
   // TODO: send confirmation emails (e.g. Resend) to the guest and fly@srilankaballoon.com.

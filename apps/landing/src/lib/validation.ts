@@ -9,14 +9,14 @@ export const bookingSchema = z
     phone: z.string().trim().min(7, "Enter a phone or WhatsApp number"),
     country: z.string().trim().min(2, "Choose your billing country"),
     flightDate: z.string().refine((d) => d > todayISO(), "Choose a date from tomorrow onwards"),
-    hotel: z.string().trim().min(2, "Tell us where you're staying so we can plan pick-up"),
+    hotel: z.string().trim().min(2, "Tell us where you’re staying so we can plan pick-up"),
     flightType: z.enum(["standard", "private"]),
     adults: z.coerce.number().int().min(1, "At least 1 adult").max(16),
     children: z.coerce.number().int().min(0).max(5),
     giftVoucher: z.boolean(),
     birthdayCake: z.boolean(),
     requests: z.string().trim().max(1000).optional(),
-    website: z.string().max(0).optional(), // honeypot — bots fill this in
+    website: z.string().max(0).optional(), // honeypot: bots fill this in
   })
   .refine((v) => v.adults + v.children <= 16, {
     message: "A balloon carries up to 16 guests",

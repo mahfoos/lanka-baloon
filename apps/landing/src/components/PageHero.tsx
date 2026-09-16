@@ -3,7 +3,7 @@ import { Pic } from "./Pic";
 
 export function PageHero({ title, intro, image }: { title: string; intro?: string; image: ImageKey }) {
   return (
-    <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden pt-24 text-white">
+    <section className="relative isolate flex min-h-[22rem] items-end overflow-hidden pt-24 text-white sm:min-h-[52svh]">
       <Pic name={image} alt="" fill priority sizes="100vw" className="kenburns -z-10 object-cover" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/20" />
       <div className="container-x pb-12 sm:pb-16">

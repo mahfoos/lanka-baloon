@@ -24,10 +24,10 @@ export default function FaqPage() {
     <>
       <PageHero title="Questions, answered" intro="Everything guests usually ask before their first flight." image="faqLakeView" />
 
-      <section className="container-x grid gap-12 py-20 sm:py-28 lg:grid-cols-[0.8fr_1.2fr]">
+      <section className="container-x section grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
         <div className="lg:sticky lg:top-28 lg:self-start">
           <h2 className="text-3xl">Parts of a balloon</h2>
-          <div className="relative mt-6 aspect-square overflow-hidden rounded-3xl border border-line bg-white">
+          <div className="relative mt-6 aspect-square overflow-hidden rounded-card border border-line bg-white">
             <Pic name="faqParts" alt="Diagram: envelope, burner and basket of a hot air balloon" fill sizes="(min-width: 1024px) 35vw, 100vw" className="object-contain" />
           </div>
           <nav aria-label="FAQ topics" className="mt-8 hidden lg:block">
@@ -46,23 +46,23 @@ export default function FaqPage() {
         <div className="space-y-14">
           {faqTopics.map((topic) => (
             <section key={topic} id={slug(topic)} className="scroll-mt-28">
-              <Reveal as="h2" className="text-sm font-semibold uppercase tracking-widest text-lake">
+              <Reveal as="h2" className="font-sans text-sm font-semibold uppercase tracking-widest text-lake">
                 {topic}
               </Reveal>
               <div className="mt-4 divide-y divide-line border-y border-line">
                 {faqs
                   .filter((f) => f.topic === topic)
                   .map((f) => (
-                    <details key={f.q} className="group py-6">
-                      <summary className="flex cursor-pointer list-none items-start justify-between gap-6 font-display text-2xl transition-colors hover:text-flame">
-                        {f.q}
-                        <span aria-hidden className="mt-1 text-flame transition-transform duration-300 group-open:rotate-45">+</span>
+                    <details key={f.q} className="group">
+                      <summary className="flex cursor-pointer items-start justify-between gap-6 py-6 transition-colors hover:text-flame">
+                        <h3 className="font-display text-2xl">{f.q}</h3>
+                        <span aria-hidden className="mt-1 shrink-0 text-flame transition-transform duration-300 group-open:rotate-45">+</span>
                       </summary>
-                      <div className="mt-4 grid gap-5 sm:grid-cols-[1fr_200px]">
+                      <div className="grid gap-5 pb-6 sm:grid-cols-[1fr_200px]">
                         <p className="text-lg text-ink-soft">{f.a}</p>
                         {f.image && (
-                          <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
-                            <Pic name={f.image} alt="" fill sizes="200px" className="object-cover" />
+                          <div className="relative aspect-[4/3] overflow-hidden rounded-media">
+                            <Pic name={f.image} alt="" fill sizes="(min-width: 640px) 200px, 100vw" className="object-cover" />
                           </div>
                         )}
                       </div>

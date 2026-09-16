@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | Sri Lanka Balloon",
   },
   description:
-    "Sunrise hot air balloon rides over Dambulla, Kandalama and Sigiriya with Lanka Ballooning (Pvt) Ltd — CAASL licensed, fully insured, all taxes included.",
+    "Sunrise hot air balloon rides over Dambulla, Kandalama and Sigiriya with Lanka Ballooning (Pvt) Ltd. CAASL licensed, fully insured, all taxes included.",
   openGraph: { siteName: company.name, type: "website", images: [img("kandalamaLake")] },
   twitter: { card: "summary_large_image", images: [img("twitterCard")] },
   icons: { icon: img("appIcon"), apple: img("appIcon") },

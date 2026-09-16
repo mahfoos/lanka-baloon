@@ -14,27 +14,27 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <PageHero title="About us" intro="Lanka Ballooning (Pvt) Ltd has flown over Dambulla since 2016, backed by the Uluer Group's two decades in ballooning." image="teamPhoto" />
+      <PageHero title="About us" intro="Lanka Ballooning (Pvt) Ltd has flown over Dambulla since 2016, backed by the Uluer Group’s two decades in ballooning." image="teamPhoto" />
 
-      <section className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-2 md:items-center">
+      <section className="container-x section grid gap-12 md:grid-cols-2 md:items-center">
         <Reveal className="prose-width space-y-4 text-lg leading-relaxed text-ink-soft">
           <p>
             <strong className="text-ink">Lanka Ballooning (Pvt) Ltd</strong> is a fully licensed operator approved by the Civil Aviation Authority of Sri Lanka (CAASL).
           </p>
           <p>
-            We're an investment of the <a className="text-flame underline" href="http://uluergroup.com">Uluer Group</a>, founded in 2016 after years of research and ballooning experience in several countries. Managing Director Mahmut Sami Uluer is also Honorary Consul of Sri Lanka to Cappadocia, Türkiye.
+            We’re an investment of the <a className="text-flame underline" href="https://uluergroup.com">Uluer Group</a>, founded in 2016 after years of research and ballooning experience in several countries. Managing Director Mahmut Sami Uluer is also Honorary Consul of Sri Lanka to Cappadocia, Türkiye.
           </p>
           <p>
-            We own and fly four balloons in our own livery, with room for 56 passengers at once. The Uluer Group also founded two of Türkiye's largest balloon companies and Nyssa Balloon Safaris in the Serengeti.
+            We own and fly four balloons in our own livery, with room for 56 passengers at once. The Uluer Group also founded two of Türkiye’s largest balloon companies and Nyssa Balloon Safaris in the Serengeti.
           </p>
         </Reveal>
-        <Reveal delay={120} className="group relative aspect-[4/3] overflow-hidden rounded-3xl">
+        <Reveal delay={120} className="group relative aspect-[4/3] overflow-hidden rounded-card">
           <Pic name="aboutUluer" alt="Uluer Group balloons" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
         </Reveal>
       </section>
 
       <section className="bg-mist">
-        <div className="container-x py-20 sm:py-28">
+        <div className="container-x section">
           <Reveal>
             <h2 className="text-4xl sm:text-5xl">Meet the team</h2>
             <p className="prose-width mt-4 text-lg text-ink-soft">
@@ -44,14 +44,14 @@ export default function AboutPage() {
           <ul className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((m, i) => (
               <Reveal key={m.name} as="li" delay={(i % 3) * 90} className="group">
-                <div className="relative aspect-square overflow-hidden rounded-3xl bg-white">
+                <div className="relative aspect-square overflow-hidden rounded-card bg-white">
                   <Pic name={m.image} alt={m.name} fill sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="photo-zoom object-cover" />
                 </div>
                 <h3 className="mt-5 text-2xl">{m.name}</h3>
                 <p className="text-sm font-semibold text-lake">{m.role}</p>
                 <p className="mt-2 text-ink-soft">{m.bio}</p>
                 {m.instagram && (
-                  <a href={m.instagram} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-medium underline">
+                  <a href={m.instagram} target="_blank" rel="noopener noreferrer" className="link-tap mt-2 text-sm font-medium underline">
                     Instagram
                   </a>
                 )}
@@ -61,7 +61,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="container-x py-20 sm:py-28">
+      <section className="container-x section">
         <Reveal>
           <h2 className="text-4xl sm:text-5xl">Our fleet</h2>
           <p className="prose-width mt-4 text-lg text-ink-soft">
@@ -71,7 +71,7 @@ export default function AboutPage() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {fleet.map((b, i) => (
             <Reveal key={b.reg} as="article" delay={i * 90} className="group">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-card">
                 <Pic name={b.image} alt={`Balloon ${b.reg}`} fill sizes="(min-width: 1024px) 25vw, 50vw" className="photo-zoom object-cover" />
               </div>
               <h3 className="mt-4 text-2xl">{b.reg}</h3>
@@ -85,25 +85,25 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-ink text-white">
-        <div className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-2 md:items-center">
+        <div className="container-x section grid gap-12 md:grid-cols-2 md:items-center">
           <Reveal>
             <h2 className="text-4xl sm:text-5xl">Pick-up vehicles</h2>
             <p className="mt-4 text-lg text-white/80">
               Bought new, air-conditioned, fully compliant with the Department of Motor Traffic, and driven by friendly staff.
             </p>
           </Reveal>
-          <Reveal delay={120} className="group relative aspect-[16/10] overflow-hidden rounded-3xl">
+          <Reveal delay={120} className="group relative aspect-[16/10] overflow-hidden rounded-card">
             <Pic name="vehicles" alt="Lanka Ballooning vehicles" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
           </Reveal>
         </div>
       </section>
 
-      <section className="container-x py-20 sm:py-28">
+      <section className="container-x section">
         <Reveal as="h2" className="text-4xl sm:text-5xl">Our licences</Reveal>
         <div className="mt-12 grid gap-10 md:grid-cols-3">
           {certifications.map((c, i) => (
             <Reveal key={c.title} as="article" delay={i * 90}>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-line bg-mist">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-media border border-line bg-mist">
                 <Pic name={c.image} alt={c.title} fill sizes="(min-width: 768px) 30vw, 100vw" className="object-contain p-4" />
               </div>
               <h3 className="mt-5 text-2xl">{c.title}</h3>
@@ -111,8 +111,8 @@ export default function AboutPage() {
             </Reveal>
           ))}
         </div>
-        <div className="relative mx-auto mt-16 aspect-[3/1] max-w-3xl">
-          <Pic name="relatedOrgs" alt="Organisations we work with" fill sizes="768px" className="object-contain" />
+        <div className="relative mx-auto mt-16 aspect-[3/2] max-w-3xl sm:aspect-[3/1]">
+          <Pic name="relatedOrgs" alt="Organisations we work with" fill sizes="(min-width: 768px) 768px, 100vw" className="object-contain" />
         </div>
       </section>
 

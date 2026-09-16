@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default function CorporatePage() {
   return (
     <>
-      <PageHero title="Corporate ballooning" intro="A hot air balloon gets your brand seen — and gives your team or customers a morning they won't forget." image="corpDialog1" />
+      <PageHero title="Corporate ballooning" intro="A hot air balloon gets your brand seen, and gives your team or customers a morning they won’t forget." image="corpDialog1" />
 
-      <section className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-[1fr_1fr]">
+      <section className="container-x section grid gap-12 md:grid-cols-[1fr_1fr]">
         <Reveal>
           <h2 className="text-4xl sm:text-5xl">What we can do for you</h2>
           <Link href="/contact" className="btn-primary mt-8">Ask for a quote</Link>
@@ -31,8 +31,8 @@ export default function CorporatePage() {
       </section>
 
       <section className="bg-mist">
-        <div className="container-x py-20 sm:py-28">
-          <Reveal as="h2" className="text-4xl sm:text-5xl">Who we&rsquo;ve flown with</Reveal>
+        <div className="container-x section">
+          <Reveal as="h2" className="text-4xl sm:text-5xl">Who we’ve flown with</Reveal>
           <div className="mt-14 space-y-20">
             {caseStudies.map((c, i) => (
               <Reveal key={c.brand} as="article" className="group grid gap-8 md:grid-cols-2 md:items-center">
@@ -40,7 +40,7 @@ export default function CorporatePage() {
                   {c.video ? (
                     <YouTube id={c.video} title={c.brand} />
                   ) : c.image ? (
-                    <div className="relative aspect-video overflow-hidden rounded-2xl">
+                    <div className="relative aspect-video overflow-hidden rounded-media">
                       <Pic name={c.image} alt={c.brand} fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
                     </div>
                   ) : null}
@@ -54,10 +54,10 @@ export default function CorporatePage() {
           </div>
 
           <Reveal as="h3" className="mt-24 text-2xl">In the Sunday Times Travel Magazine</Reveal>
-          <div className="mt-6 grid grid-cols-3 gap-4">
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {(["corpSundayTimes2", "corpSundayTimes3", "corpSundayTimes4"] as const).map((k, i) => (
-              <Reveal key={k} delay={i * 90} className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-white">
-                <Pic name={k} alt={`Magazine page ${i + 1}`} fill sizes="33vw" className="photo-zoom object-cover" />
+              <Reveal key={k} delay={i * 90} className="group relative aspect-[3/4] overflow-hidden rounded-media bg-white">
+                <Pic name={k} alt={`Magazine page ${i + 1}`} fill sizes="(min-width: 640px) 33vw, 100vw" className="photo-zoom object-cover" />
               </Reveal>
             ))}
           </div>

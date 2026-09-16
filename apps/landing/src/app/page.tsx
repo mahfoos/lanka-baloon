@@ -5,6 +5,7 @@ import { FlightTimeline } from "@/components/FlightTimeline";
 import { Gallery } from "@/components/Gallery";
 import { Rates } from "@/components/Rates";
 import { Reveal } from "@/components/Reveal";
+import { Stars } from "@/components/Stars";
 import { YouTube } from "@/components/YouTube";
 import { ContactStrip } from "@/components/ContactStrip";
 import { certifications, company, giftVoucher, occasions, stats, testimonials, videos, whyUs } from "@/lib/content";
@@ -25,15 +26,22 @@ export default function Home() {
           className="kenburns -z-10 object-cover object-center"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/30 to-ink/40" />
+        {/* The main scrim is lightest at the top, which is exactly where the
+            transparent header sits. Without this band the white nav can fall to
+            2.8:1 against a pale sunrise. */}
+        <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-ink/60 to-transparent" />
 
         <div className="container-x pb-14 pt-32 sm:pb-20">
-          <h1 className="rise text-[clamp(3.2rem,11vw,8.5rem)] leading-[0.92]">
+          {/* 13vw so the viewport term actually drives the size on a phone: at 11vw
+              the clamp floor won the entire mobile range and the headline was a
+              fixed 51px from 320px all the way to 465px. */}
+          <h1 className="rise text-[clamp(2.75rem,13vw,8.5rem)] leading-[0.92]">
             Once in<br />a lifetime.
           </h1>
 
           <div className="rise rise-delay mt-8 grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-end">
             <p className="max-w-xl text-lg text-white/90 sm:text-xl">
-              Sunrise hot air balloon flights over Dambulla, Kandalama and Sigiriya — with Sri Lanka&rsquo;s longest-running, CAASL-licensed operator.
+              Sunrise hot air balloon flights over Dambulla, Kandalama and Sigiriya, with Sri Lanka’s longest-running CAASL-licensed operator.
             </p>
             <div className="flex flex-col gap-4 md:items-end">
               <div className="flex flex-wrap gap-3">
@@ -68,26 +76,26 @@ export default function Home() {
       </section>
 
       {/* Intro */}
-      <section id="intro" className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-2 md:items-center">
+      <section id="intro" className="container-x section grid gap-12 md:grid-cols-2 md:items-center">
         <Reveal>
           <h2 className="text-4xl sm:text-5xl">The calmest skies on the island</h2>
           <div className="prose-width mt-6 space-y-4 text-lg leading-relaxed text-ink-soft">
             <p>
-              The climate around Dambulla and Kandalama is exceptionally calm and predictable — ideal for ballooning. We fly in the early morning, when the air is most stable, and cover anywhere from one to ten miles depending on the wind.
+              The climate around Dambulla and Kandalama is exceptionally calm and predictable, which is exactly what ballooning wants. We fly in the early morning, when the air is most stable, and cover anywhere from one to ten miles depending on the wind.
             </p>
             <p>
-              One moment you&rsquo;re drifting at tree-top height over the lake; the next you&rsquo;re thousands of feet up with the whole region below you.
+              One moment you’re drifting at tree-top height over the lake; the next you’re thousands of feet up with the whole region below you.
             </p>
           </div>
         </Reveal>
-        <Reveal delay={120} className="group relative aspect-[4/5] overflow-hidden rounded-[2rem]">
+        <Reveal delay={120} className="group relative aspect-[4/5] overflow-hidden rounded-card">
           <Pic name="heritanceKandalama" alt="Balloon above Heritance Kandalama" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
         </Reveal>
       </section>
 
       {/* Why us */}
       <section className="bg-mist">
-        <div className="container-x grid gap-12 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="container-x section grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <Reveal>
               <h2 className="text-4xl sm:text-5xl">Why fly with us</h2>
@@ -95,7 +103,7 @@ export default function Home() {
                 We invest in the best balloons from Ultramagic (Spain) and Lindstrand (UK), and in pilots with thousands of flight hours.
               </p>
             </Reveal>
-            <Reveal delay={120} className="group relative mt-8 aspect-[4/3] overflow-hidden rounded-3xl">
+            <Reveal delay={120} className="group relative mt-8 aspect-[4/3] overflow-hidden rounded-card">
               <Pic name="tourPackage" alt="Sri Lanka Balloon tour" fill sizes="(min-width: 1024px) 40vw, 100vw" className="photo-zoom object-cover" />
             </Reveal>
           </div>
@@ -116,47 +124,49 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The morning */}
-      <section className="container-x py-20 sm:py-28">
+      {/* The morning, then the gallery. One band: both are the same white ground,
+          and two stacked sections would have put a 160px void between them. */}
+      <section className="container-x section">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal>
             <h2 className="text-4xl sm:text-5xl">Your balloon morning</h2>
             <p className="mt-5 text-lg text-ink-soft">About three hours from hotel pick-up to drop-off.</p>
-            <Link href="/flights" className="mt-8 inline-block font-semibold text-flame underline underline-offset-4">
+            <Link href="/flights" className="link-tap mt-8 font-semibold text-flame underline underline-offset-4">
               Full flight details
             </Link>
           </Reveal>
           <FlightTimeline />
         </div>
-      </section>
 
-      {/* Gallery */}
-      <section className="container-x py-20 sm:py-28">
-        <Reveal>
-          <h2 className="text-4xl sm:text-5xl">A morning in pictures</h2>
-          <p className="mt-4 max-w-xl text-lg text-ink-soft">From the crew unrolling the envelope in the dark to champagne on the grass.</p>
-        </Reveal>
-        <div className="mt-10">
-          <Gallery />
+        <div className="mt-20 sm:mt-24">
+          <Reveal>
+            <h2 className="text-4xl sm:text-5xl">A morning in pictures</h2>
+            <p className="mt-4 max-w-xl text-lg text-ink-soft">From the crew unrolling the envelope in the dark to champagne on the grass.</p>
+          </Reveal>
+          <div className="mt-10">
+            <Gallery />
+          </div>
         </div>
       </section>
 
       {/* Occasions */}
       <section className="bg-ink text-white">
-        <div className="container-x grid gap-12 py-20 sm:py-28 md:grid-cols-2 md:items-center">
-          <Reveal className="group relative aspect-square overflow-hidden rounded-[2rem]">
+        <div className="container-x section grid gap-12 md:grid-cols-2 md:items-center">
+          <Reveal className="group relative aspect-square overflow-hidden rounded-card">
             <Pic name="specialOccasions" alt="Couple celebrating in a balloon basket" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
           </Reveal>
           <Reveal delay={120}>
             <h2 className="text-4xl sm:text-5xl">Make it an occasion</h2>
             <div className="mt-8 divide-y divide-white/15 border-y border-white/15">
               {occasions.map((o, i) => (
-                <details key={o.title} className="group py-5" open={i === 0}>
-                  <summary className="flex cursor-pointer list-none items-center justify-between font-display text-2xl">
+                <details key={o.title} className="group" open={i === 0}>
+                  {/* The padding belongs to the summary, not the details: on the
+                      details it sat outside the clickable box and left a 32px target. */}
+                  <summary className="flex cursor-pointer items-center justify-between gap-4 py-5 font-display text-2xl">
                     {o.title}
                     <span aria-hidden className="text-dawn transition-transform duration-300 group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 max-w-lg text-white/80">{o.body}</p>
+                  <p className="max-w-lg pb-5 text-white/80">{o.body}</p>
                 </details>
               ))}
             </div>
@@ -164,18 +174,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Rates */}
-      <section className="container-x py-20 sm:py-28">
+      {/* Prices, then the gift voucher: same ground, one band. */}
+      <section className="container-x section">
         <Reveal>
           <h2 className="text-4xl sm:text-5xl">Prices</h2>
           <p className="mt-4 text-lg text-ink-soft">If the weather cancels your flight, you pay nothing.</p>
         </Reveal>
         <div className="mt-10"><Rates /></div>
-      </section>
 
-      {/* Gift voucher */}
-      <section className="container-x pb-20 sm:pb-28">
-        <Reveal className="group grid overflow-hidden rounded-[2rem] bg-dawn-soft md:grid-cols-2">
+        <Reveal className="group mt-20 grid overflow-hidden rounded-card bg-dawn-soft sm:mt-24 md:grid-cols-2">
           <div className="relative min-h-72 overflow-hidden">
             <Pic name="giftVoucher" alt="Sri Lanka Balloon gift voucher" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
           </div>
@@ -189,7 +196,7 @@ export default function Home() {
 
       {/* Certifications + stats */}
       <section className="bg-mist">
-        <div className="container-x py-20 sm:py-28">
+        <div className="container-x section">
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <Reveal>
               <h2 className="text-4xl sm:text-5xl">Licensed, insured and audited</h2>
@@ -197,7 +204,7 @@ export default function Home() {
                 {company.legal} is approved by the Civil Aviation Authority of Sri Lanka, under the Ministry of Transport and Civil Aviation.
               </p>
             </Reveal>
-            <Reveal delay={120} className="group relative aspect-[16/9] overflow-hidden rounded-3xl">
+            <Reveal delay={120} className="group relative aspect-[16/9] overflow-hidden rounded-card">
               <Pic name="uluerGroup" alt="Uluer Group ballooning" fill sizes="(min-width: 768px) 50vw, 100vw" className="photo-zoom object-cover" />
             </Reveal>
           </div>
@@ -213,7 +220,9 @@ export default function Home() {
             {stats.map((s, i) => (
               <Reveal key={s.label} delay={i * 90} className="flex flex-col-reverse">
                 <dt className="mt-1 text-ink-soft">{s.label}</dt>
-                <dd className="font-display text-5xl text-lake">
+                {/* text-5xl overflows a 144px column at 360px and wraps "2,000 ft"
+                    onto two lines, so the row heights go ragged. */}
+                <dd className="font-display text-4xl text-lake sm:text-5xl">
                   {s.count === false ? s.to : <Counter to={s.to} suffix={s.suffix} />}
                 </dd>
               </Reveal>
@@ -222,18 +231,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="container-x py-20 sm:py-28">
+      {/* Reviews, then the videos: same ground, one band. */}
+      <section className="container-x section">
         <Reveal className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <h2 className="text-4xl sm:text-5xl">What guests say</h2>
-          <a href={company.tripadvisor} target="_blank" rel="noopener noreferrer" className="font-semibold text-flame underline underline-offset-4">
+          <a href={company.tripadvisor} target="_blank" rel="noopener noreferrer" className="link-tap font-semibold text-flame underline underline-offset-4">
             Read all reviews on Tripadvisor
           </a>
         </Reveal>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {testimonials.map((t, i) => (
-            <Reveal key={t.name} as="figure" delay={i * 90} className="rounded-3xl border border-line p-7 transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <p aria-label="Rated 5 out of 5" className="text-dawn">★★★★★</p>
+            <Reveal key={t.name} as="figure" delay={i * 90} className="rounded-card border border-line p-7 transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <Stars />
               <blockquote className="mt-3">
                 <p className="font-display text-2xl">{t.title}</p>
                 <p className="mt-2 text-ink-soft">{t.body}</p>
@@ -242,19 +251,18 @@ export default function Home() {
             </Reveal>
           ))}
         </div>
-      </section>
 
-      {/* Videos */}
-      <section className="container-x pb-20 sm:pb-28">
-        <Reveal>
-          <h2 className="text-4xl sm:text-5xl">Watch a flight</h2>
-        </Reveal>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {videos.map((id, i) => (
-            <Reveal key={id} delay={(i % 3) * 90}>
-              <YouTube id={id} title={`Sri Lanka Balloon video ${i + 1}`} />
-            </Reveal>
-          ))}
+        <div className="mt-20 sm:mt-24">
+          <Reveal>
+            <h2 className="text-4xl sm:text-5xl">Watch a flight</h2>
+          </Reveal>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {videos.map((id, i) => (
+              <Reveal key={id} delay={(i % 3) * 90}>
+                <YouTube id={id} title={`Sri Lanka Balloon video ${i + 1}`} />
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

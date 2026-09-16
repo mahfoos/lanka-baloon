@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // The server render must contain the real number (for SEO and no-JS visitors), so the
-// reset to zero has to happen before the browser paints — hence layout effect on the client.
+// reset to zero has to happen before the browser paints, hence a layout effect on the client.
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const DURATION_MS = 1400;
