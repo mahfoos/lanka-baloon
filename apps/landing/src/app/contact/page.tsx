@@ -20,7 +20,7 @@ const info = [
 export default function ContactPage() {
   return (
     <>
-      <PageHero title="Contact us" intro="Our base is on Kandalama Road, just outside Dambulla." image="contactMap" />
+      <PageHero title="Contact us" intro="Our base is on Kandalama Road, just outside Dambulla." image="homeHeaderMobile" />
 
       <section className="container-x section grid gap-14 lg:grid-cols-2">
         <Reveal>
