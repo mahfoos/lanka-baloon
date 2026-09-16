@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
@@ -48,7 +48,7 @@ export function Reveal({ children, as: Tag = "div", delay = 0, className }: Prop
     <Tag
       ref={ref}
       data-reveal=""
-      style={delay ? ({ "--reveal-delay": `${delay}ms` } as React.CSSProperties) : undefined}
+      style={delay ? ({ "--reveal-delay": `${delay}ms` } as CSSProperties) : undefined}
       className={className}
     >
       {children}

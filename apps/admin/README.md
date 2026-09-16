@@ -24,12 +24,14 @@ staff-facing screen lives here; the public website is the separate
 ## Getting started
 
 ```bash
-npm install                  # from the monorepo root — one install for both apps
+pnpm install                 # from the monorepo root — one install for both apps
 cp .env.example .env.local   # optional — needed only for Website Bookings
-npm run dev:admin            # http://localhost:3001
+pnpm dev:admin               # http://localhost:3001
 ```
 
-Or `cd apps/admin && npm run dev` once the root install has run.
+Or `cd apps/admin && pnpm dev` once the root install has run. The workspace uses
+pnpm rather than npm on purpose — see the
+[monorepo README](../../README.md#why-pnpm).
 
 Without Supabase keys the ERP runs fine; `/web-bookings` just shows a
 "not connected" notice instead of the reservation queue.
@@ -87,7 +89,9 @@ lib/
   data.ts                 # all dummy data + accessors/summaries
   website-db.ts           # Supabase client + row types for the website's data
 supabase/migrations/      # the shared database schema (used by both projects)
-types/index.ts            # domain types, constants, formatters, colour maps
+types/
+  index.ts                # domain types, constants, formatters, colour maps
+  react-form-actions.d.ts # lets <form action={serverAction}> type-check on React 18
 middleware.ts             # gatekeeper (public: / and /login)
 ```
 

@@ -3,21 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "description": "Sri Lanka Balloon — public website and operations ERP for Lanka Ballooning (Pvt) Ltd",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@10.26.2",
   "scripts": {
-    "dev": "npm run dev --workspace @lanka-baloon/landing",
-    "dev:landing": "npm run dev --workspace @lanka-baloon/landing",
-    "dev:admin": "npm run dev --workspace @lanka-baloon/admin",
-    "build": "npm run build --workspaces --if-present",
-    "build:landing": "npm run build --workspace @lanka-baloon/landing",
-    "build:admin": "npm run build --workspace @lanka-baloon/admin",
-    "start:landing": "npm run start --workspace @lanka-baloon/landing",
-    "start:admin": "npm run start --workspace @lanka-baloon/admin",
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "dev": "pnpm --filter @lanka-baloon/landing dev",
+    "dev:landing": "pnpm --filter @lanka-baloon/landing dev",
+    "dev:admin": "pnpm --filter @lanka-baloon/admin dev",
+    "build": "pnpm --recursive --if-present build",
+    "build:landing": "pnpm --filter @lanka-baloon/landing build",
+    "build:admin": "pnpm --filter @lanka-baloon/admin build",
+    "start:landing": "pnpm --filter @lanka-baloon/landing start",
+    "start:admin": "pnpm --filter @lanka-baloon/admin start",
+    "lint": "pnpm --recursive --if-present lint",
+    "typecheck": "pnpm --recursive --if-present typecheck"
   },
   "engines": {
     "node": ">=18.18"

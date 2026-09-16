@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Figtree, Young_Serif } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
@@ -45,7 +46,7 @@ const jsonLd = {
   sameAs: company.social.map((s) => s.href),
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body>

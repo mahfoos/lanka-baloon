@@ -15,12 +15,14 @@ carried over.
 ## Quick start
 
 ```bash
-npm install                     # from the monorepo root — one install for both apps
+pnpm install                    # from the monorepo root — one install for both apps
 cp .env.example .env.local      # add your Supabase URL + anon key
-npm run dev:landing             # http://localhost:3000
+pnpm dev:landing                # http://localhost:3000
 ```
 
-Or `cd apps/landing && npm run dev` once the root install has run.
+Or `cd apps/landing && pnpm dev` once the root install has run. The workspace uses
+pnpm rather than npm on purpose — the [monorepo README](../../README.md#why-pnpm)
+explains why, and an `npm install` will break this app's build.
 
 The public pages work without Supabase. Booking/contact forms show a "not connected yet" message until keys are added.
 
