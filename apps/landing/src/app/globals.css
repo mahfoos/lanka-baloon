@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* Palette: "dawn over Kandalama" — the colours of a balloon morning, from
+   pre-dawn indigo to sunrise amber, balloon-envelope red and lake teal. */
+@theme {
+  --color-ink: #17203a;
+  --color-ink-soft: #3d4663;
+  --color-dawn: #f3a33b;
+  --color-dawn-soft: #fbe3c2;
+  --color-flame: #c63d2f;
+  --color-flame-dark: #a02f24;
+  --color-lake: #2c6e6a;
+  --color-mist: #eef1f4;
+  --color-line: #d8dde5;
+
+  --font-display: var(--font-young-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-ink font-sans antialiased; }
+
+h1, h2, h3 { @apply font-display text-balance; letter-spacing: -0.01em; }
+p { text-wrap: pretty; }
+
+:focus-visible { outline: 3px solid var(--color-dawn); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  /* Reveals are opacity-based, so they must be forced visible or they'd never appear. */
+  .js [data-reveal] { opacity: 1 !important; transform: none !important; }
+}
+
+@utility container-x { margin-inline: auto; width: 100%; max-width: 72rem; padding-inline: 1.25rem; @media (width >= 40rem) { padding-inline: 2rem; } }
+@utility prose-width { max-width: 64ch; }
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition duration-200 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0; }
+@utility btn-primary { @apply btn bg-flame text-white shadow-sm hover:-translate-y-0.5 hover:bg-flame-dark hover:shadow-lg hover:shadow-flame/25; }
+@utility btn-ghost { @apply btn border border-current hover:-translate-y-0.5 hover:bg-white/10; }
+@utility field { @apply w-full rounded-lg border border-line bg-white px-4 py-3 text-[15px] outline-none transition focus:border-ink aria-invalid:border-flame; }
+@utility label { @apply mb-1.5 block text-sm font-medium text-ink; }
+@utility error { @apply mt-1 text-sm text-flame; }
+
+/* ---------------------------------------------------------------- *
+ * Motion
+ *
+ * Everything drifts rather than snaps — the site should feel like the
+ * flight it sells. `--ease-drift` is the shared curve: a quick start
+ * that settles slowly, the way a balloon comes to rest.
+ * ---------------------------------------------------------------- */
+
+@theme { --ease-drift: cubic-bezier(.2, .7, .2, 1); }
+
+/* The hero headline rises like a balloon on load. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 1.2s var(--ease-drift) both; }
+.rise-delay { animation-delay: .25s; }
+.rise-delay-2 { animation-delay: .45s; }
+
+/* Hero photograph: a very slow push-in, so the still image never feels static. */
+@keyframes kenburns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.09); }
+}
+.kenburns { animation: kenburns 24s var(--ease-drift) both; }
+
+/* The scroll cue breathes, like the balloon nudging upward under the burner. */
+@keyframes bob {
+  0%, 100% { transform: translateY(0); opacity: .75; }
+  50%      { transform: translateY(7px); opacity: 1; }
+}
+.bob { animation: bob 2.4s ease-in-out infinite; }
+
+/* Scroll reveals, driven by <Reveal>. Hidden only under `.js`, which the inline
+   script in the layout sets before first paint — so no-JS visitors see everything
+   and nobody sees a flash of hidden content. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-shift, 1.5rem));
+  transition:
+    opacity .8s var(--ease-drift) var(--reveal-delay, 0ms),
+    transform .8s var(--ease-drift) var(--reveal-delay, 0ms);
+}
+.js [data-reveal].shown { opacity: 1; transform: none; }
+
+/* Smooth <details> in browsers that can animate to auto height; instant elsewhere. */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+
+  details::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition: block-size .4s var(--ease-drift), opacity .3s ease, content-visibility .4s allow-discrete;
+  }
+  details[open]::details-content { block-size: auto; opacity: 1; }
+}
+
+/* Photo inside a hover group drifts closer. Pair with `group` on the wrapper. */
+@utility photo-zoom { @apply transition-transform duration-700 ease-[var(--ease-drift)] group-hover:scale-105; }

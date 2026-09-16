@@ -1,0 +1,25 @@
+{
+  "name": "lanka-baloon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sri Lanka Balloon — public website and operations ERP for Lanka Ballooning (Pvt) Ltd",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @lanka-baloon/landing",
+    "dev:landing": "npm run dev --workspace @lanka-baloon/landing",
+    "dev:admin": "npm run dev --workspace @lanka-baloon/admin",
+    "build": "npm run build --workspaces --if-present",
+    "build:landing": "npm run build --workspace @lanka-baloon/landing",
+    "build:admin": "npm run build --workspace @lanka-baloon/admin",
+    "start:landing": "npm run start --workspace @lanka-baloon/landing",
+    "start:admin": "npm run start --workspace @lanka-baloon/admin",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}

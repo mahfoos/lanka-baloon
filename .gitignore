@@ -1,0 +1,22 @@
+# Dependencies — hoisted to the root by npm workspaces, but nested copies happen
+# whenever two apps need different versions of the same package.
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# Secrets. .env.example files are committed on purpose — they carry no values.
+.env
+.env.local
+.env*.local
+
+# Hosting
+.vercel
+
+# macOS
+.DS_Store
+*.textClipping
