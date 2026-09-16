@@ -15,6 +15,7 @@ export type FieldSpec =
   | { name: string; label: string; type: "text" | "number" | "date" | "time" | "money" | "tel" | "email"; required?: boolean; placeholder?: string; hint?: string; span?: 1 | 2 | 3 }
   | { name: string; label: string; type: "textarea"; required?: boolean; placeholder?: string; hint?: string; span?: 1 | 2 | 3 }
   | { name: string; label: string; type: "select"; options: { value: string; label: string }[]; required?: boolean; hint?: string; span?: 1 | 2 | 3 }
+  | { name: string; label: string; type: "combo"; options: string[]; required?: boolean; placeholder?: string; hint?: string; span?: 1 | 2 | 3 }
   | { name: string; label: string; type: "checkbox"; hint?: string; span?: 1 | 2 | 3 };
 
 /**
@@ -98,6 +99,30 @@ export function RecordForm({
                   <option value="">Choose…</option>
                   {f.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
+                {f.hint && <p className="mt-1 text-xs text-ink/45">{f.hint}</p>}
+              </div>
+            );
+          }
+
+          // Pick from master data, or type something that isn't on the list yet.
+          if (f.type === "combo") {
+            const listId = `list-${f.name}`;
+            return (
+              <div key={f.name} className={cls}>
+                <Label htmlFor={inputId} required={f.required}>{f.label}</Label>
+                <input
+                  id={inputId}
+                  name={f.name}
+                  list={listId}
+                  defaultValue={val(f.name)}
+                  required={f.required}
+                  placeholder={f.placeholder}
+                  autoComplete="off"
+                  className="input-field"
+                />
+                <datalist id={listId}>
+                  {f.options.map((o) => <option key={o} value={o} />)}
+                </datalist>
                 {f.hint && <p className="mt-1 text-xs text-ink/45">{f.hint}</p>}
               </div>
             );

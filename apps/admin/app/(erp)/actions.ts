@@ -200,7 +200,7 @@ export async function deleteCustomer(fd: FormData) {
 
 const PACKAGES = ["SHARED_FLIGHT", "PRIVATE_FLIGHT", "MARRIAGE_PROPOSAL", "BIRTHDAY_CELEBRATION", "WEDDING_ANNIVERSARY", "GIFT_VOUCHER"] as const;
 const BOOKING_STATUSES = ["ENQUIRY", "PENDING_PAYMENT", "CONFIRMED", "FLOWN", "CANCELLED", "WEATHER_HOLD", "REFUNDED"] as const;
-const BOOKING_SOURCES = ["WEBSITE", "PHONE", "EMAIL", "WALK_IN", "TRAVEL_AGENT", "HOTEL_CONCIERGE", "GUIDE"] as const;
+const BOOKING_SOURCES = ["AGENT", "GUIDE", "ONLINE", "HOTEL", "SIGIRIYA_POINT", "LAST_MINUTE", "DIRECT", "PHONE"] as const;
 const CURRENCIES = ["LKR", "USD", "EUR", "TRY"] as const;
 
 export async function saveBooking(fd: FormData) {
@@ -210,6 +210,9 @@ export async function saveBooking(fd: FormData) {
   const customerName = text(fd, "customerName");
   const flightDate = date(fd, "flightDate");
   if (!customerName || !flightDate) return;
+  // A VAT-registered agent without a number is the thing accounts end up
+  // chasing, so the flag and the number travel together or not at all.
+  if (bool(fd, "vatRegistered") && !text(fd, "vatNumber")) return;
 
   const data = {
     customerName,
@@ -225,9 +228,13 @@ export async function saveBooking(fd: FormData) {
     totalAmount: decimal(fd, "totalAmount", 0)!,
     paidAmount: decimal(fd, "paidAmount", 0)!,
     status: enumValue(fd, "status", BOOKING_STATUSES) ?? "ENQUIRY",
-    source: enumValue(fd, "source", BOOKING_SOURCES) ?? "PHONE",
+    source: enumValue(fd, "source", BOOKING_SOURCES) ?? "DIRECT",
     hotel: text(fd, "hotel"),
     city: text(fd, "city"),
+    passengerNames: text(fd, "passengerNames"),
+    vatRegistered: bool(fd, "vatRegistered"),
+    vatNumber: text(fd, "vatNumber"),
+    exchangeRate: decimal(fd, "exchangeRate"),
     pickupTime: text(fd, "pickupTime"),
     guideName: text(fd, "guideName"),
     notes: text(fd, "notes"),

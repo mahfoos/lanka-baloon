@@ -70,6 +70,7 @@ const SECTIONS: Section[] = [
   {
     label: "SYSTEM",
     items: [
+      { href: "/master-data", label: "Master Data", icon: "M4 7v10c0 1.66 3.58 3 8 3s8-1.34 8-3V7M4 7c0 1.66 3.58 3 8 3s8-1.34 8-3M4 7c0-1.66 3.58-3 8-3s8 1.34 8 3m0 5c0 1.66-3.58 3-8 3s-8-1.34-8-3", perm: "canViewCustomers" },
       { href: "/users", label: "Users & Access", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M15 7a3 3 0 11-6 0 3 3 0 016 0z", perm: "canManageUsers" },
     ],
   },

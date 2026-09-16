@@ -32,13 +32,14 @@ export const BOOKING_STATUSES = [
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export const BOOKING_SOURCES = [
-  "Website",
+  "Agent booking",
+  "Guide booking",
+  "Online booking",
+  "Hotel booking",
+  "Sigiriya booking point",
+  "Last minute booking",
+  "Direct",
   "Phone",
-  "Email",
-  "Walk-in",
-  "Travel Agent",
-  "Hotel Concierge",
-  "Guide Booking",
 ] as const;
 export type BookingSource = (typeof BOOKING_SOURCES)[number];
 
@@ -67,6 +68,13 @@ export interface Booking {
   email?: string;
   phone?: string;
   country?: string;
+  /// Everyone flying on this booking, as the agent gave them.
+  passengerNames?: string;
+  vatRegistered?: boolean;
+  /// LKR per unit of `currency`, agreed at the time of sale.
+  exchangeRate?: number;
+  /// totalAmount x exchangeRate. Derived, never stored, so it cannot disagree.
+  totalLkr?: number;
 }
 
 /* ------------------------------------------------------------------ *

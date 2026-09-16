@@ -86,6 +86,10 @@ export async function listBookings(): Promise<Booking[]> {
     email: b.email ?? undefined,
     phone: b.phone ?? undefined,
     country: b.country ?? undefined,
+    passengerNames: b.passengerNames ?? undefined,
+    vatRegistered: b.vatRegistered,
+    exchangeRate: b.exchangeRate ? toNumber(b.exchangeRate) : undefined,
+    totalLkr: b.exchangeRate ? toNumber(b.totalAmount) * toNumber(b.exchangeRate) : undefined,
   }));
 }
 
@@ -426,7 +430,7 @@ export async function dashboardStats(): Promise<DashboardStats> {
     }),
     prisma.review.aggregate({ _avg: { rating: true } }),
     prisma.voucher.count({ where: { status: "ACTIVE" } }),
-    prisma.booking.count({ where: { source: "WEBSITE", status: "ENQUIRY" } }),
+    prisma.booking.count({ where: { source: "ONLINE", status: "ENQUIRY" } }),
     prisma.contactMessage.count({ where: { handled: false } }),
     financeSummary(),
   ]);

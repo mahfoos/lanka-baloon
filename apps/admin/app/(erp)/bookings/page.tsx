@@ -9,6 +9,7 @@ import {
   PageHeader, StatCard, StatGrid, Badge, TableCard, Th, Td, Tr, EmptyRow, AccessRestricted,
 } from "@/components/ui";
 
+import { countries } from "@/lib/countries";
 import { RecordForm, RowActions, type FieldSpec } from "@/components/RecordForm";
 import { saveBooking, deleteBooking } from "../actions";
 
@@ -38,37 +39,56 @@ export default async function BookingsPage({
       : null;
   const showForm = manage && (searchParams.new === "1" || editing !== null);
 
+  // Pick-lists come from Master Data. They are offered as combo boxes rather
+  // than hard dropdowns: the office takes bookings faster than master data gets
+  // maintained, and a hotel missing from the list must not block a reservation.
+  const [agentRows, hotelRows, cityRows] = await Promise.all([
+    prisma.agent.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
+    prisma.hotel.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
+    prisma.city.findMany({ orderBy: { name: "asc" } }),
+  ]);
+
   const FIELDS: FieldSpec[] = [
-  { name: "customerName", label: "Guest name", type: "text", required: true },
-  { name: "flightDate", label: "Flight date", type: "date", required: true },
-  { name: "packageType", label: "Package", type: "select", options: [
-    { value: "SHARED_FLIGHT", label: "Shared Flight" }, { value: "PRIVATE_FLIGHT", label: "Private Flight" },
-    { value: "MARRIAGE_PROPOSAL", label: "Marriage Proposal" }, { value: "BIRTHDAY_CELEBRATION", label: "Birthday Celebration" },
-    { value: "WEDDING_ANNIVERSARY", label: "Wedding Anniversary" }, { value: "GIFT_VOUCHER", label: "Gift Voucher" }] },
-  { name: "adults", label: "Adults", type: "number" },
-  { name: "children", label: "Children", type: "number" },
-  { name: "status", label: "Status", type: "select", options: [
-    { value: "ENQUIRY", label: "Enquiry" }, { value: "PENDING_PAYMENT", label: "Pending Payment" },
-    { value: "CONFIRMED", label: "Confirmed" }, { value: "FLOWN", label: "Flown" },
-    { value: "WEATHER_HOLD", label: "Weather Hold" }, { value: "CANCELLED", label: "Cancelled" },
-    { value: "REFUNDED", label: "Refunded" }] },
-  { name: "source", label: "Booked via", type: "select", options: [
-    { value: "PHONE", label: "Phone" }, { value: "EMAIL", label: "Email" }, { value: "WALK_IN", label: "Walk-in" },
-    { value: "TRAVEL_AGENT", label: "Travel Agent" }, { value: "HOTEL_CONCIERGE", label: "Hotel Concierge" },
-    { value: "GUIDE", label: "Guide Booking" }, { value: "WEBSITE", label: "Website" }] },
-  { name: "currency", label: "Currency", type: "select", options: [{ value: "LKR", label: "LKR" }, { value: "USD", label: "USD" }, { value: "EUR", label: "EUR" }, { value: "TRY", label: "TRY" }] },
-  { name: "pricePerHead", label: "Price per head", type: "money" },
-  { name: "totalAmount", label: "Total", type: "money" },
-  { name: "paidAmount", label: "Paid", type: "money" },
-  { name: "email", label: "Email", type: "email" },
-  { name: "phone", label: "Phone", type: "tel" },
-  { name: "country", label: "Country", type: "text" },
-  { name: "hotel", label: "Hotel", type: "text" },
-  { name: "city", label: "City", type: "text" },
-  { name: "pickupTime", label: "Pick-up time", type: "text", placeholder: "4.45 AM" },
-  { name: "guideName", label: "Guide / agency", type: "text" },
-  { name: "notes", label: "Notes", type: "textarea" },
-];
+    { name: "customerName", label: "Lead guest / agency", type: "combo", required: true,
+      options: agentRows.map((a) => a.name),
+      hint: "Pick an agent from Master Data, or type a guest name for a direct booking." },
+    { name: "passengerNames", label: "Passenger names", type: "textarea", span: 2,
+      placeholder: "Jane Smith, John Smith", hint: "Everyone flying, as given." },
+    { name: "flightDate", label: "Flight date", type: "date", required: true },
+    // Only the shared flight is sold at the moment; the other packages stay in
+    // the schema so historic bookings keep their type.
+    { name: "packageType", label: "Package", type: "select", options: [{ value: "SHARED_FLIGHT", label: "Shared Flight" }] },
+    { name: "adults", label: "Adults", type: "number" },
+    { name: "children", label: "Children", type: "number" },
+    { name: "status", label: "Status", type: "select", options: [
+      { value: "ENQUIRY", label: "Enquiry" }, { value: "PENDING_PAYMENT", label: "Pending Payment" },
+      { value: "CONFIRMED", label: "Confirmed" }, { value: "FLOWN", label: "Flown" },
+      { value: "WEATHER_HOLD", label: "Weather Hold" }, { value: "CANCELLED", label: "Cancelled" },
+      { value: "REFUNDED", label: "Refunded" }] },
+    { name: "source", label: "Booked via", type: "select", required: true, options: [
+      { value: "AGENT", label: "Agent booking" }, { value: "GUIDE", label: "Guide booking" },
+      { value: "ONLINE", label: "Online booking" }, { value: "HOTEL", label: "Hotel booking" },
+      { value: "SIGIRIYA_POINT", label: "Sigiriya booking point" },
+      { value: "LAST_MINUTE", label: "Last minute booking" }, { value: "DIRECT", label: "Direct" }] },
+    { name: "currency", label: "Currency", type: "select", options: [
+      { value: "USD", label: "USD" }, { value: "LKR", label: "LKR" },
+      { value: "EUR", label: "EUR" }, { value: "TRY", label: "TRY" }] },
+    { name: "pricePerHead", label: "Price per head", type: "money", placeholder: "212.50" },
+    { name: "exchangeRate", label: "Rate (LKR per unit)", type: "money", placeholder: "333", hint: "Used to work out the rupee total." },
+    { name: "totalAmount", label: "Total", type: "money" },
+    { name: "paidAmount", label: "Paid", type: "money" },
+    { name: "email", label: "Email", type: "email" },
+    { name: "phone", label: "Phone", type: "tel" },
+    { name: "country", label: "Country", type: "select", options: countries.map((c) => ({ value: c, label: c })) },
+    { name: "hotel", label: "Hotel", type: "combo", options: hotelRows.map((h) => h.name), hint: "From Master Data." },
+    { name: "city", label: "City", type: "combo", options: cityRows.map((c) => c.name) },
+    { name: "pickupTime", label: "Pick-up time", type: "time" },
+    { name: "vatRegistered", label: "Agent is VAT registered", type: "checkbox" },
+    { name: "vatNumber", label: "VAT number", type: "text", hint: "Required when VAT registered is ticked." },
+    { name: "notes", label: "Notes", type: "textarea" },
+  ];
+
+  // FIELDS is built inside the component: its options come from master data.
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -87,7 +107,7 @@ export default async function BookingsPage({
             cancelHref="/bookings"
             title={editing ? `Edit ${editing.ref}` : "New Booking"}
             submitLabel={editing ? "Save changes" : "Save"}
-            values={editing ?? { status: "ENQUIRY", source: "PHONE", currency: "LKR", adults: 1, children: 0, packageType: "SHARED_FLIGHT" }}
+            values={editing ?? { status: "ENQUIRY", source: "AGENT", currency: "USD", adults: 2, children: 0, packageType: "SHARED_FLIGHT" }}
           />
         </div>
       )}
@@ -126,6 +146,9 @@ export default async function BookingsPage({
                 <Td className="font-mono text-xs text-brand-700">{b.ref}</Td>
                 <Td>
                   <p className="font-semibold text-brand-950">{b.customerName}</p>
+                  {b.passengerNames && (
+                    <p className="text-[11px] leading-snug text-ink/50">{b.passengerNames}</p>
+                  )}
                   <p className="text-xs text-ink/45">{b.source}{b.hotel ? ` · ${b.hotel}` : ""}</p>
                 </Td>
                 <Td>
@@ -134,7 +157,14 @@ export default async function BookingsPage({
                 </Td>
                 <Td className="text-ink/70">{formatDate(b.flightDate)}</Td>
                 <Td className="text-center text-ink/70">{b.adults + b.children}</Td>
-                <Td className="text-right font-semibold text-brand-950">{formatCurrency(b.totalAmount)}</Td>
+                <Td className="whitespace-nowrap text-right font-semibold text-brand-950">
+                  {b.currency} {b.totalAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+                  {b.totalLkr !== undefined && b.currency !== "LKR" && (
+                    <span className="block text-[11px] font-normal text-ink/45">
+                      = LKR {Math.round(b.totalLkr).toLocaleString("en-LK")} @ {b.exchangeRate}
+                    </span>
+                  )}
+                </Td>
                 <Td className={`text-right font-semibold ${balance > 0 ? "text-red-600" : "text-green-700"}`}>{balance > 0 ? formatCurrency(balance) : "Paid"}</Td>
                 <Td><Badge label={b.status} className={BOOKING_STATUS_COLORS[b.status]} /></Td>
                 {manage && (

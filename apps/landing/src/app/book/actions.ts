@@ -48,7 +48,7 @@ export async function createBooking(_prev: FormState, formData: FormData): Promi
         // No payment gateway yet: every website booking lands as an enquiry for
         // the office to confirm and collect against.
         status: "ENQUIRY",
-        source: "WEBSITE",
+        source: "ONLINE",
         giftVoucher: d.giftVoucher,
         birthdayCake: d.birthdayCake,
         hotel: d.hotel,

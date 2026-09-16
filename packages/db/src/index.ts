@@ -47,13 +47,14 @@ export const BOOKING_STATUS_LABELS = {
 } as const;
 
 export const BOOKING_SOURCE_LABELS = {
-  WEBSITE: "Website",
+  AGENT: "Agent booking",
+  GUIDE: "Guide booking",
+  ONLINE: "Online booking",
+  HOTEL: "Hotel booking",
+  SIGIRIYA_POINT: "Sigiriya booking point",
+  LAST_MINUTE: "Last minute booking",
+  DIRECT: "Direct",
   PHONE: "Phone",
-  EMAIL: "Email",
-  WALK_IN: "Walk-in",
-  TRAVEL_AGENT: "Travel Agent",
-  HOTEL_CONCIERGE: "Hotel Concierge",
-  GUIDE: "Guide Booking",
 } as const;
 
 export const FLIGHT_STATUS_LABELS = {
