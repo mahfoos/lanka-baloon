@@ -25,11 +25,15 @@ datasource db {
 enum Currency {
   LKR
   USD
+  EUR
+  TRY
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Bookings
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum PackageType {
   SHARED_FLIGHT
@@ -57,40 +61,58 @@ enum BookingSource {
   WALK_IN
   TRAVEL_AGENT
   HOTEL_CONCIERGE
+  GUIDE
 }
 
 model Booking {
-  id           String        @id @default(uuid())
+  id              String        @id @default(uuid())
   /// Human reference shown to the guest, e.g. SLB-2026-0042.
-  ref          String        @unique
-  customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  customerId   String?
+  ref             String        @unique
+  customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customerId      String?
   /// Denormalised so a booking still reads correctly if the CRM record is merged
   /// or removed. The website has no customer record at the moment it books.
-  customerName String
-  email        String?
-  phone        String?
-  country      String?
-  packageType  PackageType   @default(SHARED_FLIGHT)
-  flightDate   DateTime      @db.Date
-  flight       Flight?       @relation(fields: [flightId], references: [id], onDelete: SetNull)
-  flightId     String?
-  adults       Int           @default(1)
-  children     Int           @default(0)
-  currency     Currency      @default(LKR)
-  pricePerHead Decimal       @default(0) @db.Decimal(12, 2)
-  totalAmount  Decimal       @default(0) @db.Decimal(12, 2)
-  paidAmount   Decimal       @default(0) @db.Decimal(12, 2)
-  status       BookingStatus @default(ENQUIRY)
-  source       BookingSource @default(WEBSITE)
+  customerName    String
+  email           String?
+  phone           String?
+  country         String?
+  packageType     PackageType   @default(SHARED_FLIGHT)
+  flightDate      DateTime      @db.Date
+  flight          Flight?       @relation(fields: [flightId], references: [id], onDelete: SetNull)
+  flightId        String?
+  adults          Int           @default(1)
+  children        Int           @default(0)
+  currency        Currency      @default(LKR)
+  pricePerHead    Decimal       @default(0) @db.Decimal(12, 2)
+  totalAmount     Decimal       @default(0) @db.Decimal(12, 2)
+  paidAmount      Decimal       @default(0) @db.Decimal(12, 2)
+  status          BookingStatus @default(ENQUIRY)
+  source          BookingSource @default(WEBSITE)
   /// Website extras, kept as flags so the office sees them without parsing notes.
-  giftVoucher  Boolean       @default(false)
-  birthdayCake Boolean       @default(false)
+  giftVoucher     Boolean       @default(false)
+  birthdayCake    Boolean       @default(false)
   specialOccasion String?
-  hotel        String?
-  notes        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  hotel           String?
+  /// Town the hotel is in: the manifest groups pick-ups by it.
+  city            String?
+  /// Pick-up time as written on the list, e.g. "4.45 AM". Free text because it is
+  /// set per guest by the office, not derived from the launch time.
+  pickupTime      String?
+  /// Guide or agency that made the booking, when it wasn't the guest.
+  guideName       String?
+  /// Written as name plus vehicle code on the sheet, e.g. "Ajith GDH 1".
+  driverPickup    String?
+  driverDropoff   String?
+  /// Taken before the flight; the balance is collected at the field.
+  advancePaid     Decimal       @default(0) @db.Decimal(12, 2)
+  flightTimeCash  Decimal       @default(0) @db.Decimal(12, 2)
+  /// Headcount as flown. The "before" list shows adults + children, the "after"
+  /// list shows this once the office has corrected it, which is the only thing
+  /// that differs between the two sheets.
+  actualPax       Int?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   transactions Transaction[]
   vouchers     Voucher[]
@@ -100,9 +122,11 @@ model Booking {
   @@index([createdAt])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Website contact form
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 model ContactMessage {
   id        String   @id @default(uuid())
@@ -115,9 +139,11 @@ model ContactMessage {
   @@index([createdAt])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Flights
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum FlightStatus {
   SCHEDULED
@@ -129,34 +155,36 @@ enum FlightStatus {
 }
 
 model Flight {
-  id           String       @id @default(uuid())
-  code         String       @unique
-  date         DateTime     @db.Date
-  launchTime   String
-  launchSite   String
-  balloon      Balloon?     @relation(fields: [balloonId], references: [id], onDelete: SetNull)
-  balloonId    String?
-  pilot        CrewMember?  @relation(fields: [pilotId], references: [id], onDelete: SetNull)
-  pilotId      String?
-  capacity     Int          @default(0)
-  status       FlightStatus @default(SCHEDULED)
-  windSpeedKts Int?
+  id            String       @id @default(uuid())
+  code          String       @unique
+  date          DateTime     @db.Date
+  launchTime    String
+  launchSite    String
+  balloon       Balloon?     @relation(fields: [balloonId], references: [id], onDelete: SetNull)
+  balloonId     String?
+  pilot         CrewMember?  @relation(fields: [pilotId], references: [id], onDelete: SetNull)
+  pilotId       String?
+  capacity      Int          @default(0)
+  status        FlightStatus @default(SCHEDULED)
+  windSpeedKts  Int?
   windDirection String?
-  durationMins Int?
-  notes        String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  durationMins  Int?
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   /// `booked` is derived from these rather than stored, so it can't drift.
-  bookings     Booking[]
+  bookings Booking[]
 
   @@index([date])
   @@index([status])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Fleet
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum BalloonManufacturer {
   ULTRAMAGIC
@@ -187,13 +215,15 @@ model Balloon {
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
-  flights             Flight[]
-  maintenanceLogs     MaintenanceLog[]
+  flights         Flight[]
+  maintenanceLogs MaintenanceLog[]
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Crew
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum CrewRole {
   COMMERCIAL_PILOT
@@ -228,12 +258,15 @@ model CrewMember {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  flights          Flight[]
+  flights       Flight[]
+  rosterEntries CrewRosterEntry[]
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Customers
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum CustomerType {
   TOURIST
@@ -255,14 +288,16 @@ model Customer {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  bookings  Booking[]
+  bookings Booking[]
 
   @@index([email])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Ground transport
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum VehicleType {
   PASSENGER_VAN
@@ -279,26 +314,28 @@ enum VehicleStatus {
 }
 
 model Vehicle {
-  id                   String           @id @default(uuid())
-  registration         String           @unique
+  id                   String        @id @default(uuid())
+  registration         String        @unique
   type                 VehicleType
   makeModel            String
-  seats                Int              @default(0)
-  hasAirConditioning   Boolean          @default(true)
-  status               VehicleStatus    @default(AVAILABLE)
-  revenueLicenseExpiry DateTime?        @db.Date
-  insuranceExpiry      DateTime?        @db.Date
-  lastServiceOdo       Int              @default(0)
+  seats                Int           @default(0)
+  hasAirConditioning   Boolean       @default(true)
+  status               VehicleStatus @default(AVAILABLE)
+  revenueLicenseExpiry DateTime?     @db.Date
+  insuranceExpiry      DateTime?     @db.Date
+  lastServiceOdo       Int           @default(0)
   notes                String?
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
-  maintenanceLogs      MaintenanceLog[]
+  maintenanceLogs MaintenanceLog[]
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Gift vouchers
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum VoucherStatus {
   ACTIVE
@@ -326,9 +363,11 @@ model Voucher {
   @@index([status])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Finance
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum PaymentMethod {
   CARD
@@ -363,9 +402,11 @@ model Transaction {
   @@index([type])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Maintenance
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum MaintenanceAssetType {
   BALLOON
@@ -411,9 +452,11 @@ model MaintenanceLog {
   @@index([status])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Compliance
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 enum ComplianceKind {
   AIR_OPERATOR_CERTIFICATE
@@ -443,9 +486,11 @@ model ComplianceRecord {
   @@index([expiryDate])
 }
 
-/* ------------------------------------------------------------------ *
+/**
+ * ------------------------------------------------------------------ *
  * Reviews
- * ------------------------------------------------------------------ */
+ * ------------------------------------------------------------------
+ */
 
 model Review {
   id        String   @id @default(uuid())
@@ -462,4 +507,60 @@ model Review {
   updatedAt DateTime @updatedAt
 
   @@index([date])
+}
+
+/**
+ * ------------------------------------------------------------------ *
+ * Crew roster
+ * The monthly sheet is a grid of crew against days, marked 1 or 0. One row per
+ * crew member per day, so a month is a query rather than a spreadsheet tab.
+ * ------------------------------------------------------------------
+ */
+
+model CrewRosterEntry {
+  id        String     @id @default(uuid())
+  crew      CrewMember @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  crewId    String
+  date      DateTime   @db.Date
+  worked    Boolean    @default(false)
+  note      String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  /// One mark per person per day; re-marking updates rather than duplicates.
+  @@unique([crewId, date])
+  @@index([date])
+}
+
+/**
+ * ------------------------------------------------------------------ *
+ * Daily cash book
+ * Mirrors the Daily Accounting Report: income and expense lines per day, each in
+ * its own currency. Yesterday's closing balance is not stored, because a stored
+ * running total is the thing that goes wrong. It is summed from every entry up
+ * to the day being viewed, with OPENING rows seeding the starting cash.
+ * ------------------------------------------------------------------
+ */
+
+enum CashbookKind {
+  OPENING
+  INCOME
+  EXPENSE
+}
+
+model CashbookEntry {
+  id          String       @id @default(uuid())
+  date        DateTime     @db.Date
+  kind        CashbookKind
+  description String
+  /// "PAX" on the income side, "KİŞİ" on the expense side.
+  people      Int?
+  currency    Currency     @default(LKR)
+  amount      Decimal      @db.Decimal(12, 2)
+  reference   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([date])
+  @@index([kind])
 }

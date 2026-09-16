@@ -53,6 +53,7 @@ export const BOOKING_SOURCE_LABELS = {
   WALK_IN: "Walk-in",
   TRAVEL_AGENT: "Travel Agent",
   HOTEL_CONCIERGE: "Hotel Concierge",
+  GUIDE: "Guide Booking",
 } as const;
 
 export const FLIGHT_STATUS_LABELS = {

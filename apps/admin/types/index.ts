@@ -38,6 +38,7 @@ export const BOOKING_SOURCES = [
   "Walk-in",
   "Travel Agent",
   "Hotel Concierge",
+  "Guide Booking",
 ] as const;
 export type BookingSource = (typeof BOOKING_SOURCES)[number];
 
@@ -62,7 +63,7 @@ export interface Booking {
   createdAt: string;
   /// Website bookings are quoted in dollars, office bookings in rupees, so the
   /// unit travels with the row rather than being assumed.
-  currency: "LKR" | "USD";
+  currency: "LKR" | "USD" | "EUR" | "TRY";
   email?: string;
   phone?: string;
   country?: string;

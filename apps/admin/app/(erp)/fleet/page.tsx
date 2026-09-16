@@ -1,19 +1,51 @@
+import Link from "next/link";
+import { prisma } from "@lanka-baloon/db";
 import { getSession, can } from "@/lib/auth";
 import { listBalloons } from "@/lib/data";
 import { formatDate, daysUntil, BALLOON_STATUS_COLORS } from "@/types";
 import {
   PageHeader, StatCard, StatGrid, Badge, AccessRestricted,
 } from "@/components/ui";
+import { RecordForm, RowActions, type FieldSpec } from "@/components/RecordForm";
+import { saveBalloon, deleteBalloon } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function FleetPage() {
+const FIELDS: FieldSpec[] = [
+  { name: "registration", label: "Registration", type: "text", required: true, placeholder: "4R-SLB" },
+  { name: "name", label: "Name", type: "text", required: true, placeholder: "Sigiriya" },
+  { name: "manufacturer", label: "Manufacturer", type: "select", required: true, options: [
+    { value: "ULTRAMAGIC", label: "Ultramagic" }, { value: "LINDSTRAND", label: "Lindstrand" }] },
+  { name: "model", label: "Model", type: "text", required: true, placeholder: "N-425" },
+  { name: "basketCapacity", label: "Basket capacity", type: "number", placeholder: "16" },
+  { name: "envelopeVolumeM3", label: "Envelope volume (m³)", type: "number", placeholder: "12000" },
+  { name: "yearBuilt", label: "Year built", type: "number", placeholder: "2019" },
+  { name: "totalFlightHours", label: "Total flight hours", type: "money" },
+  { name: "status", label: "Status", type: "select", options: [
+    { value: "AIRWORTHY", label: "Airworthy" }, { value: "IN_MAINTENANCE", label: "In Maintenance" },
+    { value: "GROUNDED", label: "Grounded" }, { value: "RETIRED", label: "Retired" }] },
+  { name: "airworthinessExpiry", label: "Airworthiness expiry", type: "date" },
+  { name: "lastInspection", label: "Last inspection", type: "date" },
+  { name: "hasSafetyBelts", label: "Safety belts fitted", type: "checkbox" },
+];
+
+export default async function FleetPage({
+  searchParams,
+}: {
+  searchParams: { new?: string; edit?: string };
+}) {
   const user = getSession()!;
   if (!can(user, "canViewFleet")) {
     return <AccessRestricted message="The balloon fleet is visible to operations and pilot roles." />;
   }
   const manage = can(user, "canManageFleet");
   const balloons = await listBalloons();
+
+  const editing =
+    manage && searchParams.edit
+      ? await prisma.balloon.findUnique({ where: { id: searchParams.edit } })
+      : null;
+  const showForm = manage && (searchParams.new === "1" || editing !== null);
 
   const airworthy = balloons.filter((b) => b.status === "Airworthy").length;
   const totalHours = balloons.reduce((s, b) => s + b.totalFlightHours, 0);
@@ -24,8 +56,22 @@ export default async function FleetPage() {
       <PageHeader
         title="Balloon Fleet"
         subtitle="Ultramagic (Spain) & Lindstrand (UK) balloons — all with safety belts and EASA design."
-        action={manage ? <button className="btn-primary" disabled>+ Add Balloon</button> : undefined}
+        action={manage && !showForm ? <Link href="/fleet?new=1" className="btn-primary">+ Add Balloon</Link> : undefined}
       />
+
+      {showForm && (
+        <div className="mt-6">
+          <RecordForm
+            action={saveBalloon}
+            fields={FIELDS}
+            id={editing?.id}
+            cancelHref="/fleet"
+            title={editing ? `Edit ${editing.registration}` : "Add a balloon"}
+            submitLabel={editing ? "Save changes" : "Add balloon"}
+            values={editing ?? { status: "AIRWORTHY", hasSafetyBelts: true }}
+          />
+        </div>
+      )}
 
       <div className="mt-8">
         <StatGrid>
@@ -35,6 +81,12 @@ export default async function FleetPage() {
           <StatCard label="Safety Belts" value="All baskets" hint="only operator in Sri Lanka" tone="accent" />
         </StatGrid>
       </div>
+
+      {balloons.length === 0 && !showForm && (
+        <p className="mt-6 rounded-2xl bg-white p-8 text-center text-sm text-ink/45 shadow-card">
+          No balloons on file yet.{manage && " Use “Add Balloon” to enter the first one."}
+        </p>
+      )}
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {balloons.map((b) => {
@@ -49,6 +101,11 @@ export default async function FleetPage() {
                 </div>
                 <Badge label={b.status} className={BALLOON_STATUS_COLORS[b.status]} />
               </div>
+              {manage && (
+                <div className="mt-3">
+                  <RowActions editHref={`/fleet?edit=${b.id}`} deleteAction={deleteBalloon} id={b.id} label={b.registration} />
+                </div>
+              )}
 
               <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                 <div className="rounded-xl bg-paper p-3">

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { prisma } from "@lanka-baloon/db";
 import { getSession, can } from "@/lib/auth";
 import { listTransactions, financeSummary } from "@/lib/data";
 import { formatCurrency, formatDate } from "@/types";
@@ -5,13 +7,35 @@ import {
   PageHeader, StatCard, StatGrid, Badge, TableCard, Th, Td, Tr, EmptyRow, AccessRestricted,
 } from "@/components/ui";
 
+import { RecordForm, RowActions, type FieldSpec } from "@/components/RecordForm";
+import { saveTransaction, deleteTransaction } from "../actions";
+
 export const dynamic = "force-dynamic";
 
-export default async function FinancePage() {
+const FIELDS: FieldSpec[] = [
+  { name: "date", label: "Date", type: "date", required: true },
+  { name: "type", label: "Type", type: "select", required: true, options: [
+    { value: "INCOME", label: "Income" }, { value: "EXPENSE", label: "Expense" }] },
+  { name: "category", label: "Category", type: "text", required: true, hint: "Package name for income; Fuel, Salaries, Maintenance… for expense." },
+  { name: "currency", label: "Currency", type: "select", options: [{ value: "LKR", label: "LKR" }, { value: "USD", label: "USD" }, { value: "EUR", label: "EUR" }, { value: "TRY", label: "TRY" }] },
+  { name: "amount", label: "Amount", type: "money", required: true },
+  { name: "method", label: "Method", type: "select", options: [
+    { value: "CARD", label: "Card" }, { value: "BANK_TRANSFER", label: "Bank Transfer" }, { value: "CASH", label: "Cash" },
+    { value: "ONLINE_GATEWAY", label: "Online Gateway" }, { value: "AGENT_CREDIT", label: "Agent Credit" }] },
+  { name: "reference", label: "Reference", type: "text" },
+  { name: "description", label: "Description", type: "textarea" },
+];
+
+export default async function FinancePage({
+  searchParams,
+}: {
+  searchParams: { new?: string; edit?: string };
+}) {
   const user = getSession()!;
   if (!can(user, "canViewFinance")) {
     return <AccessRestricted message="Finance is restricted to administrator and accountant roles." />;
   }
+  const manage = can(user, "canManageFinance");
   const txns = await listTransactions();
   const summary = await financeSummary();
 
@@ -23,9 +47,33 @@ export default async function FinancePage() {
   const expenseRows = Array.from(byCategory.entries()).sort((a, b) => b[1] - a[1]);
   const maxExpense = expenseRows[0]?.[1] ?? 1;
 
+  const editing =
+    manage && searchParams.edit
+      ? await prisma.transaction.findUnique({ where: { id: searchParams.edit } })
+      : null;
+  const showForm = manage && (searchParams.new === "1" || editing !== null);
+
   return (
     <div className="mx-auto max-w-6xl">
-      <PageHeader title="Finance" subtitle="Revenue, expenses and the season's net position — all amounts in LKR." />
+      <PageHeader
+        title="Finance"
+        subtitle="Revenue, expenses and the season's net position. Totals count LKR rows only."
+        action={manage && !showForm ? <Link href="/finance?new=1" className="btn-primary">+ Add Transaction</Link> : undefined}
+      />
+
+      {showForm && (
+        <div className="mt-6">
+          <RecordForm
+            action={saveTransaction}
+            fields={FIELDS}
+            id={editing?.id}
+            cancelHref="/finance"
+            title={editing ? `Edit ${editing.category}` : "Add Transaction"}
+            submitLabel={editing ? "Save changes" : "Save"}
+            values={editing ?? { type: "EXPENSE", currency: "LKR", method: "BANK_TRANSFER" }}
+          />
+        </div>
+      )}
 
       <div className="mt-8">
         <StatGrid>
@@ -46,11 +94,12 @@ export default async function FinancePage() {
               <Th>Method</Th>
               <Th>Reference</Th>
               <Th className="text-right">Amount</Th>
+              {manage && <Th />}
             </>
           }
         >
           {txns.length === 0 ? (
-            <EmptyRow colSpan={5} label="No transactions." />
+            <EmptyRow colSpan={manage ? 6 : 5} label="No transactions." />
           ) : txns.map((t) => (
             <Tr key={t.id}>
               <Td className="text-ink/60">{formatDate(t.date)}</Td>
@@ -65,6 +114,11 @@ export default async function FinancePage() {
                   {t.type === "income" ? "+" : "−"}{formatCurrency(t.amount)}
                 </span>
               </Td>
+              {manage && (
+                <Td>
+                  <RowActions editHref={`/finance?edit=${t.id}`} deleteAction={deleteTransaction} id={t.id} label={String(t.category)} />
+                </Td>
+              )}
             </Tr>
           ))}
         </TableCard>

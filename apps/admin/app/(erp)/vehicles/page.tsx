@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { prisma } from "@lanka-baloon/db";
 import { getSession, can } from "@/lib/auth";
 import { listVehicles } from "@/lib/data";
 import { formatDate, daysUntil, VEHICLE_STATUS_COLORS } from "@/types";
@@ -5,9 +7,33 @@ import {
   PageHeader, StatCard, StatGrid, Badge, TableCard, Th, Td, Tr, EmptyRow, AccessRestricted,
 } from "@/components/ui";
 
+import { RecordForm, RowActions, type FieldSpec } from "@/components/RecordForm";
+import { saveVehicle, deleteVehicle } from "../actions";
+
 export const dynamic = "force-dynamic";
 
-export default async function VehiclesPage() {
+const FIELDS: FieldSpec[] = [
+  { name: "registration", label: "Registration", type: "text", required: true, placeholder: "WP CAB-1234" },
+  { name: "type", label: "Type", type: "select", required: true, options: [
+    { value: "PASSENGER_VAN", label: "Passenger Van" }, { value: "CHASE_4X4", label: "Chase 4x4" },
+    { value: "RECOVERY_TRUCK", label: "Recovery Truck" }, { value: "CAR", label: "Car" }] },
+  { name: "makeModel", label: "Make and model", type: "text", required: true },
+  { name: "seats", label: "Seats", type: "number" },
+  { name: "status", label: "Status", type: "select", options: [
+    { value: "AVAILABLE", label: "Available" }, { value: "ON_TRIP", label: "On Trip" },
+    { value: "SERVICING", label: "Servicing" }, { value: "OFF_ROAD", label: "Off Road" }] },
+  { name: "revenueLicenseExpiry", label: "Revenue licence expiry", type: "date" },
+  { name: "insuranceExpiry", label: "Insurance expiry", type: "date" },
+  { name: "lastServiceOdo", label: "Odometer at last service", type: "number" },
+  { name: "hasAirConditioning", label: "Air conditioned", type: "checkbox" },
+  { name: "notes", label: "Notes", type: "textarea" },
+];
+
+export default async function VehiclesPage({
+  searchParams,
+}: {
+  searchParams: { new?: string; edit?: string };
+}) {
   const user = getSession()!;
   if (!can(user, "canViewVehicles")) {
     return <AccessRestricted message="Ground transport is visible to operations roles." />;
@@ -19,13 +45,33 @@ export default async function VehiclesPage() {
   const seats = vehicles.reduce((s, v) => s + v.seats, 0);
   const acCount = vehicles.filter((v) => v.hasAirConditioning).length;
 
+  const editing =
+    manage && searchParams.edit
+      ? await prisma.vehicle.findUnique({ where: { id: searchParams.edit } })
+      : null;
+  const showForm = manage && (searchParams.new === "1" || editing !== null);
+
   return (
     <div className="mx-auto max-w-6xl">
       <PageHeader
         title="Ground Transport"
         subtitle="Brand-new, A/C, DMT-compliant vehicles for hotel pick-up, chase and recovery."
-        action={manage ? <button className="btn-primary" disabled>+ Add Vehicle</button> : undefined}
+        action={manage && !showForm ? <Link href="/vehicles?new=1" className="btn-primary">+ Add Vehicle</Link> : undefined}
       />
+
+      {showForm && (
+        <div className="mt-6">
+          <RecordForm
+            action={saveVehicle}
+            fields={FIELDS}
+            id={editing?.id}
+            cancelHref="/vehicles"
+            title={editing ? `Edit ${editing.registration}` : "Add Vehicle"}
+            submitLabel={editing ? "Save changes" : "Add"}
+            values={editing ?? { status: "AVAILABLE", hasAirConditioning: true }}
+          />
+        </div>
+      )}
 
       <div className="mt-8">
         <StatGrid>
@@ -47,11 +93,12 @@ export default async function VehiclesPage() {
               <Th>Revenue Licence</Th>
               <Th>Insurance</Th>
               <Th>Status</Th>
+              {manage && <Th />}
             </>
           }
         >
           {vehicles.length === 0 ? (
-            <EmptyRow colSpan={7} label="No vehicles." />
+            <EmptyRow colSpan={manage ? 8 : 7} label="No vehicles." />
           ) : vehicles.map((v) => {
             const rlDays = daysUntil(v.revenueLicenseExpiry);
             const insDays = daysUntil(v.insuranceExpiry);
@@ -64,6 +111,11 @@ export default async function VehiclesPage() {
                 <Td className={rlDays < 60 ? "font-semibold text-amber-600" : "text-ink/70"}>{formatDate(v.revenueLicenseExpiry)}</Td>
                 <Td className={insDays < 60 ? "font-semibold text-amber-600" : "text-ink/70"}>{formatDate(v.insuranceExpiry)}</Td>
                 <Td><Badge label={v.status} className={VEHICLE_STATUS_COLORS[v.status]} /></Td>
+                {manage && (
+                  <Td>
+                    <RowActions editHref={`/vehicles?edit=${v.id}`} deleteAction={deleteVehicle} id={v.id} label={String(v.registration)} />
+                  </Td>
+                )}
               </Tr>
             );
           })}

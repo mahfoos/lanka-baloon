@@ -30,6 +30,7 @@ const SECTIONS: Section[] = [
     label: "RESERVATIONS",
     items: [
       { href: "/bookings", label: "Bookings", icon: "M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z", perm: "canViewBookings" },
+      { href: "/manifest", label: "Flight Manifest", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4", perm: "canViewBookings" },
       { href: "/messages", label: "Website Messages", icon: "M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1zm0 1l8 6 8-6", perm: "canViewBookings" },
       { href: "/customers", label: "Customers", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", perm: "canViewCustomers" },
       { href: "/vouchers", label: "Gift Vouchers", icon: "M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M2 8h20v4H2zM12 8v12M12 8L9.5 4.5a2 2 0 113 0L12 8zm0 0l2.5-3.5a2 2 0 10-3 0L12 8z", perm: "canViewVouchers" },
@@ -41,12 +42,14 @@ const SECTIONS: Section[] = [
       { href: "/flights", label: "Flight Schedule", icon: "M12 2.5c-2 3-3 5.5-3 8a3 3 0 006 0c0-2.5-1-5-3-8zM9 18.5h6M10 21h4M9 15.5a6 6 0 01-3-5.2", perm: "canViewFlights" },
       { href: "/fleet", label: "Balloon Fleet", icon: "M12 2C8 2 5 5.5 5 10c0 3.5 2.5 6 5 6.5V18h4v-1.5c2.5-.5 5-3 5-6.5 0-4.5-3-8-7-8zM10 18h4v2h-4z", perm: "canViewFleet" },
       { href: "/crew", label: "Crew & Pilots", icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z", perm: "canViewCrew" },
+      { href: "/roster", label: "Crew Roster", icon: "M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1zm4 10h2m4 0h2", perm: "canViewCrew" },
       { href: "/vehicles", label: "Ground Transport", icon: "M3 13l2-5a2 2 0 011.9-1.4h10.2A2 2 0 0119 8l2 5M5 13h14v4a1 1 0 01-1 1h-1a2 2 0 01-4 0H9a2 2 0 01-4 0H4a1 1 0 01-1-1v-4z", perm: "canViewVehicles" },
     ],
   },
   {
     label: "FINANCE",
     items: [
+      { href: "/cashbook", label: "Daily Cash Book", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 9v-1m0 1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", perm: "canViewFinance" },
       { href: "/finance", label: "Finance", icon: "M3 10h18M7 15h2m4 0h4M5 5h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z", perm: "canViewFinance" },
     ],
   },
@@ -60,6 +63,7 @@ const SECTIONS: Section[] = [
   {
     label: "ENGAGEMENT",
     items: [
+      { href: "/reports", label: "Passenger Report", icon: "M3 3v18h18M7 15l3-4 3 3 5-7", perm: "canViewBookings" },
       { href: "/reviews", label: "Reviews", icon: "M11 5.1l1.9 3.8 4.2.6-3 3 .7 4.2L11 14.7 7.2 16.7l.7-4.2-3-3 4.2-.6L11 5.1z", perm: "canViewReviews" },
     ],
   },
