@@ -6,20 +6,21 @@ staff-facing screen lives here; the public website is the separate
 [`@lanka-baloon/landing`](../landing) app. See the
 [monorepo README](../../README.md) for how the two fit together.
 
-> **Status:** demo build — most modules read from in-memory **dummy data**
-> (`lib/data.ts`), and their "Add / Edit" buttons are stubbed (`disabled`) ready to
-> be wired to forms + a real store later.
+> **Status:** every module now reads live data from Postgres via
+> `@lanka-baloon/db`. The dummy records are gone, so a module is empty until
+> something is entered. "Add / Edit" buttons are still stubbed (`disabled`): the
+> read path is real, the write path is not, apart from booking status and website
+> messages.
 >
-> The exception is **Website Bookings** (`/web-bookings`), which is live: it reads
-> and updates the real reservations and contact messages the public site writes
-> into Supabase.
+> Bookings made on the public website arrive here automatically, tagged
+> *Website* and unpaid.
 
 ## Stack
 
 - **Next.js 14** App Router, **TypeScript** (strict)
 - **Tailwind CSS** — sky-blue + sunrise-orange brand theme
 - Cookie-based auth (HMAC-signed session, in-memory user directory)
-- **Supabase** for the website's reservations — the only external service
+- **Prisma + Postgres** through `@lanka-baloon/db`, shared with the website
 
 ## Getting started
 
@@ -33,8 +34,8 @@ Or `cd apps/admin && pnpm dev` once the root install has run. The workspace uses
 pnpm rather than npm on purpose — see the
 [monorepo README](../../README.md#why-pnpm).
 
-Without Supabase keys the ERP runs fine; `/web-bookings` just shows a
-"not connected" notice instead of the reservation queue.
+`DATABASE_URL` and `DIRECT_URL` are required: every module reads from the
+database. The repo root holds them and `apps/admin/.env.local` symlinks to it.
 
 - `/` — operator sign-in (the app's entry point)
 - `/dashboard` and module routes — role-gated ERP
@@ -57,8 +58,8 @@ All accounts share the password **`balloon123`**.
 | Area | Route | Notes |
 | ---- | ----- | ----- |
 | Dashboard | `/dashboard` | KPIs, upcoming flights, alerts |
-| Bookings | `/bookings` | Reservations, payment balances, occasions (dummy data) |
-| Website Bookings | `/web-bookings` | **Live** — reservations + contact messages from the public site |
+| Bookings | `/bookings` | Every reservation, including those taken on the website |
+| Website Messages | `/messages` | Contact-form enquiries from the public site |
 | Customers | `/customers` | CRM — guests, agents, hotels |
 | Gift Vouchers | `/vouchers` | Issue / redeem, 1-year validity |
 | Flight Schedule | `/flights` | Launches, balloon + pilot, load factor, weather |
@@ -80,15 +81,14 @@ app/
     layout.tsx
     dashboard/ bookings/ flights/ fleet/ crew/ customers/
     vehicles/ vouchers/ finance/ maintenance/ compliance/ reviews/ users/
-    web-bookings/         # live Supabase module (page + server actions)
+    messages/             # website contact form inbox
   api/auth/               # login / logout / me
 components/               # Sidebar, UserProvider, Spinner, ui toolkit
 lib/
   roles.ts                # roles + permission matrix
   auth.ts                 # session + in-memory user directory
   data.ts                 # all dummy data + accessors/summaries
-  website-db.ts           # Supabase client + row types for the website's data
-supabase/migrations/      # the shared database schema (used by both projects)
+  data.ts                 # every query the modules read through
 types/
   index.ts                # domain types, constants, formatters, colour maps
   react-form-actions.d.ts # lets <form action={serverAction}> type-check on React 18

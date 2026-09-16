@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function FinancePage() {
+export default async function FinancePage() {
   const user = getSession()!;
   if (!can(user, "canViewFinance")) {
     return <AccessRestricted message="Finance is restricted to administrator and accountant roles." />;
   }
-  const txns = listTransactions();
-  const summary = financeSummary();
+  const txns = await listTransactions();
+  const summary = await financeSummary();
 
   // Expense breakdown by category
   const byCategory = new Map<string, number>();

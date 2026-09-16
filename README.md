@@ -7,7 +7,8 @@ operations platform behind [srilankaballoon.com](https://www.srilankaballoon.com
 apps/
   landing/    @lanka-baloon/landing   public website        Next 15 · Tailwind v4 · :3000
   admin/      @lanka-baloon/admin     ERP + back office     Next 14 · Tailwind v3 · :3001
-packages/     shared code (empty for now — see packages/README.md)
+packages/
+  db/         @lanka-baloon/db        Prisma schema + client, shared by both
 ```
 
 Two apps rather than one because they answer to different people: the website is a
@@ -31,9 +32,16 @@ install` here will reintroduce a build failure. If you don't have it:
 The ports differ so both can run at once, in two terminals. `pnpm dev` is a
 shorthand for the landing site.
 
-Each app reads its own `.env.local`; copy the `.env.example` next to it and fill in
-the values. Both apps start without any env vars — the website's forms and the
-ERP's Website Bookings module show a "not connected yet" notice instead.
+Both apps read the same database, so both need `DATABASE_URL` and `DIRECT_URL`.
+The repo-root `.env.local` holds them, and each app has a symlink to it:
+
+```bash
+ln -sf ../../.env.local apps/admin/.env.local
+ln -sf ../../.env.local apps/landing/.env.local
+```
+
+Next only loads `.env.local` from its own project directory, which is why the
+symlinks exist. On Vercel you set the variables per project instead.
 
 ## Workspace commands
 
@@ -50,29 +58,52 @@ Anything scoped to a single app also works from inside its directory
 
 ## How the two apps meet
 
-They share one Supabase project and nothing else — no shared code, no shared
-runtime, no network calls between them.
+They share one Postgres database (Supabase-hosted) through `packages/db`, and
+nothing else: no shared UI, no runtime coupling, no calls between them.
 
 ```
-visitor ──▶ apps/landing ──insert as `anon`──▶ Supabase ◀──service role── apps/admin ◀── staff
-                                              bookings
-                                              contact_messages
+visitor ──▶ apps/landing ──┐                      ┌── apps/admin ◀── staff
+            book / contact │  @lanka-baloon/db    │   every module
+            server actions └──▶  Postgres   ◀─────┘
 ```
 
-- **The website only writes.** It connects with the `anon` key, and Row Level
-  Security permits `insert` and nothing else, so a reservation can never be read
-  back from the browser.
-- **The ERP reads and updates.** It connects with the service-role key, which
-  bypasses RLS entirely — so access is decided by the ERP's own permission matrix
-  (`canViewBookings` / `canManageBookings` in `apps/admin/lib/roles.ts`), enforced
-  in both the page and its server actions.
+A booking made on the website is written into the same `Booking` table the ERP's
+Bookings module reads, tagged `source: WEBSITE`, `status: ENQUIRY`. There is no
+separate "website bookings" inbox: the front desk works one queue. Contact-form
+messages are the exception and have their own page, at `/messages`.
 
-The schema lives at `apps/admin/supabase/migrations/0001_init.sql`; run it in the
-Supabase SQL editor. The ERP owns it because the ERP is where the data is worked.
+**There is no payment gateway.** Every website booking arrives unpaid, as an
+enquiry, for the office to confirm and collect against.
 
-> `SUPABASE_SERVICE_ROLE_KEY` bypasses every access rule in the database. Keep it
-> out of `NEXT_PUBLIC_*`, and import `apps/admin/lib/website-db.ts` only from
-> server components and server actions.
+### Currency
+
+Rows carry their own currency. The website quotes in US dollars, the office works
+in rupees, so `Booking.currency`, `Voucher.currency` and `Transaction.currency`
+record which unit the figure is in. A bare number would silently corrupt every
+total, and a hard-coded exchange rate would be worse. The finance summary
+therefore sums LKR rows only.
+
+> `DATABASE_URL` is a full Postgres credential. Everything in `packages/db` is
+> server-only: import it from server components and server actions, never from a
+> `"use client"` file.
+
+### Schema changes
+
+```bash
+pnpm --filter @lanka-baloon/db migrate          # create a migration and apply it
+pnpm --filter @lanka-baloon/db migrate:deploy   # apply existing migrations
+pnpm --filter @lanka-baloon/db studio           # browse the data
+```
+
+Migrations run over `DIRECT_URL`, because pgbouncer can't run them. Both commands
+load the repo-root `.env.local` themselves.
+
+### Access control
+
+The ERP's own role matrix (`apps/admin/lib/roles.ts`) is the only thing gating
+staff access to this data, checked in each page and each server action. There is
+no database-level policy behind it, because both apps connect as the same
+Postgres role.
 
 ## Why pnpm
 

@@ -7,7 +7,7 @@ carried over.
 
 > **This project is the website only — there is no staff area in it.**
 > Staff read and work the reservations this site takes in the separate
-> [`@lanka-baloon/admin`](../admin) app, under *Website Bookings*.
+> [`@lanka-baloon/admin`](../admin) app, under *Bookings*.
 > Both apps talk to the same Supabase project; the database schema lives with the
 > admin app in `apps/admin/supabase/migrations`. See the
 > [monorepo README](../../README.md) for how the two fit together.
@@ -40,17 +40,18 @@ The public pages work without Supabase. Booking/contact forms show a "not connec
 
 Redirects live in `next.config.ts` so Google rankings carry over.
 
-## Supabase setup
+## The database
 
-1. Create a project at supabase.com.
-2. SQL Editor → paste and run `apps/admin/supabase/migrations/0001_init.sql`
-   (tables: `bookings`, `contact_messages`, with Row Level Security).
-3. Copy Project URL + **anon** key into `.env.local`.
+Booking and contact forms write straight into the shared Postgres database
+through `@lanka-baloon/db`; a booking appears in the ERP's Bookings module the
+moment it is submitted, as an unpaid enquiry. There is no payment gateway.
 
-Security model: this site connects as `anon` and RLS lets it **insert** bookings and
-messages only — it can never read a reservation back, so nothing sensitive is
-reachable from the browser. Totals are always recalculated on the server
-(`src/lib/pricing.ts`) rather than trusted from the form.
+Both forms are server actions, so the connection never goes near the browser.
+Totals are always recalculated on the server (`src/lib/pricing.ts`) rather than
+trusted from the form, and prices are quoted in US dollars, which is recorded on
+each row as `currency: USD`.
+
+Setup and migrations live in the [monorepo README](../../README.md#how-the-two-apps-meet).
 
 ## Photos
 

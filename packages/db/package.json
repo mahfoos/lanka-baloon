@@ -1,0 +1,26 @@
+{
+  "name": "@lanka-baloon/db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prisma schema and client shared by the public website and the ERP",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "dotenv -e ../../.env.local -- prisma migrate dev",
+    "migrate:deploy": "dotenv -e ../../.env.local -- prisma migrate deploy",
+    "introspect": "dotenv -e ../../.env.local -- prisma db pull --print",
+    "studio": "dotenv -e ../../.env.local -- prisma studio",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.1.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.1.0"
+  }
+}

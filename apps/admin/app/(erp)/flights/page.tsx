@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function FlightsPage() {
+export default async function FlightsPage() {
   const user = getSession()!;
   if (!can(user, "canViewFlights")) {
     return <AccessRestricted message="The flight schedule is visible to operations, reservations and pilot roles." />;
   }
   const manage = can(user, "canManageFlights");
-  const flights = listFlights();
+  const flights = await listFlights();
 
   const scheduled = flights.filter((f) => f.status === "Scheduled").length;
   const completed = flights.filter((f) => f.status === "Completed").length;

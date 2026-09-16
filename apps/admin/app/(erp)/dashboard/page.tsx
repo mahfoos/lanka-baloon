@@ -11,15 +11,15 @@ import { Badge, StatCard, StatGrid, Stars } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const user = getSession()!;
-  const stats = dashboardStats();
+  const stats = await dashboardStats();
 
-  const bookings = listBookings();
-  const flights = listFlights();
-  const compliance = listCompliance();
-  const maintenance = listMaintenance();
-  const reviews = listReviews();
+  const bookings = await listBookings();
+  const flights = await listFlights();
+  const compliance = await listCompliance();
+  const maintenance = await listMaintenance();
+  const reviews = await listReviews();
 
   const upcomingFlights = flights
     .filter((f) => f.status === "Scheduled")

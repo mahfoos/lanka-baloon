@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function CrewPage() {
+export default async function CrewPage() {
   const user = getSession()!;
   if (!can(user, "canViewCrew")) {
     return <AccessRestricted message="The crew roster is visible to operations and pilot roles." />;
   }
   const manage = can(user, "canManageCrew");
-  const crew = listCrew();
+  const crew = await listCrew();
 
   const pilots = crew.filter((c) => c.role.includes("Pilot"));
   const active = crew.filter((c) => c.status === "Active").length;

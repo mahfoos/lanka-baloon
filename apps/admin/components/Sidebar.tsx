@@ -30,7 +30,7 @@ const SECTIONS: Section[] = [
     label: "RESERVATIONS",
     items: [
       { href: "/bookings", label: "Bookings", icon: "M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z", perm: "canViewBookings" },
-      { href: "/web-bookings", label: "Website Bookings", icon: "M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18M21 12a9 9 0 11-18 0 9 9 0 0118 0z", perm: "canViewBookings" },
+      { href: "/messages", label: "Website Messages", icon: "M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1zm0 1l8 6 8-6", perm: "canViewBookings" },
       { href: "/customers", label: "Customers", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", perm: "canViewCustomers" },
       { href: "/vouchers", label: "Gift Vouchers", icon: "M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M2 8h20v4H2zM12 8v12M12 8L9.5 4.5a2 2 0 113 0L12 8zm0 0l2.5-3.5a2 2 0 10-3 0L12 8z", perm: "canViewVouchers" },
     ],

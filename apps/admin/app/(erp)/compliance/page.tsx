@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function CompliancePage() {
+export default async function CompliancePage() {
   const user = getSession()!;
   if (!can(user, "canViewCompliance")) {
     return <AccessRestricted message="Compliance records are visible to operations and pilot roles." />;
   }
   const manage = can(user, "canManageCompliance");
-  const records = listCompliance();
+  const records = await listCompliance();
 
   const withStatus = records.map((r) => ({ ...r, status: complianceStatusFor(r.expiryDate) }));
   const valid = withStatus.filter((r) => r.status === "Valid").length;

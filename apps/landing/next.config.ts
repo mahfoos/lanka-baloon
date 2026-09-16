@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The db package ships TypeScript source, so Next has to compile it.
+  transpilePackages: ["@lanka-baloon/db"],
+  // Prisma's query engine is a native binary; bundling it breaks the build.
+  serverExternalPackages: ["@prisma/client", "prisma"],
   images: {
     // Site photos are served from /public/images; only YouTube thumbnails are remote.
     remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com" }],

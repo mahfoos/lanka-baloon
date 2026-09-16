@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function VehiclesPage() {
+export default async function VehiclesPage() {
   const user = getSession()!;
   if (!can(user, "canViewVehicles")) {
     return <AccessRestricted message="Ground transport is visible to operations roles." />;
   }
   const manage = can(user, "canManageVehicles");
-  const vehicles = listVehicles();
+  const vehicles = await listVehicles();
 
   const available = vehicles.filter((v) => v.status === "Available").length;
   const seats = vehicles.reduce((s, v) => s + v.seats, 0);

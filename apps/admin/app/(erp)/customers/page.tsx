@@ -14,13 +14,13 @@ const TYPE_COLORS: Record<string, string> = {
   "Travel Agent": "bg-accent-100 text-accent-600",
 };
 
-export default function CustomersPage() {
+export default async function CustomersPage() {
   const user = getSession()!;
   if (!can(user, "canViewCustomers")) {
     return <AccessRestricted message="Customer records are visible to reservations, operations and finance roles." />;
   }
   const manage = can(user, "canManageCustomers");
-  const customers = listCustomers();
+  const customers = await listCustomers();
 
   const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0);
   const repeat = customers.filter((c) => c.totalBookings > 1).length;

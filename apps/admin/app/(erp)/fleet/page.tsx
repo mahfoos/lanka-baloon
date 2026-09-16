@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function FleetPage() {
+export default async function FleetPage() {
   const user = getSession()!;
   if (!can(user, "canViewFleet")) {
     return <AccessRestricted message="The balloon fleet is visible to operations and pilot roles." />;
   }
   const manage = can(user, "canManageFleet");
-  const balloons = listBalloons();
+  const balloons = await listBalloons();
 
   const airworthy = balloons.filter((b) => b.status === "Airworthy").length;
   const totalHours = balloons.reduce((s, b) => s + b.totalFlightHours, 0);

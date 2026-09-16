@@ -60,6 +60,12 @@ export interface Booking {
   hotel?: string;         // pick-up hotel
   notes?: string;
   createdAt: string;
+  /// Website bookings are quoted in dollars, office bookings in rupees, so the
+  /// unit travels with the row rather than being assumed.
+  currency: "LKR" | "USD";
+  email?: string;
+  phone?: string;
+  country?: string;
 }
 
 /* ------------------------------------------------------------------ *

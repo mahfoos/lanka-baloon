@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function VouchersPage() {
+export default async function VouchersPage() {
   const user = getSession()!;
   if (!can(user, "canViewVouchers")) {
     return <AccessRestricted message="Gift vouchers are visible to reservations and finance roles." />;
   }
   const manage = can(user, "canManageVouchers");
-  const vouchers = listVouchers();
+  const vouchers = await listVouchers();
 
   const active = vouchers.filter((v) => v.status === "Active");
   const activeValue = active.reduce((s, v) => s + v.amount, 0);

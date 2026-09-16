@@ -7,12 +7,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
   const user = getSession()!;
   if (!can(user, "canViewReviews")) {
     return <AccessRestricted message="Reviews are visible to most operational roles." />;
   }
-  const reviews = listReviews();
+  const reviews = await listReviews();
 
   const avg = reviews.reduce((s, r) => s + r.rating, 0) / (reviews.length || 1);
   const fiveStar = reviews.filter((r) => r.rating === 5).length;

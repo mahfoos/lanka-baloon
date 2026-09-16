@@ -7,13 +7,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function MaintenancePage() {
+export default async function MaintenancePage() {
   const user = getSession()!;
   if (!can(user, "canViewMaintenance")) {
     return <AccessRestricted message="Maintenance logs are visible to operations and pilot roles." />;
   }
   const manage = can(user, "canManageMaintenance");
-  const logs = listMaintenance();
+  const logs = await listMaintenance();
 
   const open = logs.filter((m) => m.status !== "Completed").length;
   const overdue = logs.filter((m) => m.status === "Overdue").length;

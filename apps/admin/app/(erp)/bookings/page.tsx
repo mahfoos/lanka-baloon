@@ -9,13 +9,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default function BookingsPage() {
+export default async function BookingsPage() {
   const user = getSession()!;
   if (!can(user, "canViewBookings")) {
     return <AccessRestricted message="Bookings are visible to reservations, operations and finance roles." />;
   }
   const manage = can(user, "canManageBookings");
-  const bookings = listBookings();
+  const bookings = await listBookings();
 
   const revenue = bookings.filter((b) => b.status !== "Cancelled").reduce((s, b) => s + b.totalAmount, 0);
   const outstanding = bookings.filter((b) => b.status !== "Cancelled" && b.status !== "Refunded")
