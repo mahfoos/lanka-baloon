@@ -7,9 +7,10 @@
 
 generator client {
   provider = "prisma-client-js"
-  // Generated into the package rather than a hoisted node_modules, so pnpm's
-  // isolated layout can't leave one app resolving a stale client.
-  output   = "../generated/client"
+  // Default output on purpose. A custom path lands inside the transpiled
+  // workspace package, so webpack bundles the client and rewrites __dirname,
+  // and Prisma can then no longer find its native query engine at runtime.
+  // Left at the default it resolves from real node_modules and stays external.
 }
 
 datasource db {

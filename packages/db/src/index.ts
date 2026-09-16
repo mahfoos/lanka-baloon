@@ -6,9 +6,9 @@
  * "use client" file would be a serious leak. Next will refuse to bundle it
  * anyway, because `pg` has no browser build, but do not rely on that.
  */
-import { PrismaClient } from "../generated/client";
+import { PrismaClient } from "@prisma/client";
 
-export * from "../generated/client";
+export * from "@prisma/client";
 
 // Next's dev server reloads modules on every edit. Without this the process
 // accumulates a new pool per reload until Postgres refuses more connections.
